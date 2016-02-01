@@ -15,43 +15,28 @@ import objects.Deck;
 
 public class NN {
     // NeuralNetwork network = NeuralNetwork.load("lib/Just Card neurons.nnet");
-    NeuralNetwork network = NeuralNetwork.load("lib/NN.nnet");
-    Boolean[] CardsIHave = new Boolean[52];
-    Boolean[] CardsSeen = new Boolean[52];
-    int gameMode;
-    int CardInPlay;
-    int CardToPlay;
-    Deck deck = new Deck();
+    private NeuralNetwork network = NeuralNetwork.load("lib/NN.nnet");
+    private Boolean[] CardsIHave = new Boolean[52];
+    private Boolean[] CardsSeen = new Boolean[52];
+    private int gameMode = -1;
+    private int CardInPlay = -1;
+    private int CardToPlay = -1;
 
     public NN() {
 	Arrays.fill(CardsIHave, Boolean.FALSE);
 	Arrays.fill(CardsSeen, Boolean.FALSE);
     }
 
-    // public static void main(String[] args) {
-    // NN t = new NN();
-    // int i = 0;
-    // for (Card c : t.deck.getDeck()) {
-    // // int val =
-    // (13*c.getSuit().getCardSuit())+(c.getValue().getCardValue());
-    // //// System.out.println(i + "\t" + val + "\t" + c.toString());
-    // // System.out.println(i + "\t" + t.CardsIHave[i]);
-    // if (c.getValue().getCardValue() == 14) {
-    // System.out.println(i + "\t" + (13 * c.getSuit().getCardSuit()));
-    // }
-    // else {
-    // System.out.println(i + "\t" + (13 * c.getSuit().getCardSuit() +
-    // c.getValue().getCardValue() - 1));
-    // }
-    // i++;
-    // }
-    // // t.organiseLables();
-    // // t.printNetworkInputLables();
-    // // t.network.save("lib/TestSavingNetwork");
-    // }
-
     public void clearHand() {
 	Arrays.fill(CardsIHave, Boolean.FALSE);
+    }
+
+    public void clearCardInPlay() {
+	CardInPlay = -1;
+    }
+
+    public void clearCardToPlay() {
+	CardToPlay = -1;
     }
 
     public void addCardIHave(Card c) {
@@ -85,7 +70,16 @@ public class NN {
 	}
     }
 
-    public void addCardsInPlay(Card c) {
+    public void removeCardSeen(Card c) {
+	if (c.getValue().getCardValue() == 14) {
+	    CardsSeen[(13 * c.getSuit().getCardSuit())] = false;
+	} else {
+	    CardsSeen[(13 * c.getSuit().getCardSuit())
+		    + (c.getValue().getCardValue()) - 1] = false;
+	}
+    }
+
+    public void setCardsInPlay(Card c) {
 	// input
 	if (c.getValue().getCardValue() == 14) {
 	    CardInPlay = (13 * c.getSuit().getCardSuit());
@@ -95,7 +89,7 @@ public class NN {
 	}
     }
 
-    public void addCardsToPlay(Card c) {
+    public void setCardsToPlay(Card c) {
 	if (c.getValue().getCardValue() == 14) {
 	    CardToPlay = (13 * c.getSuit().getCardSuit());
 	} else {
@@ -149,46 +143,32 @@ public class NN {
 
     private void setInputs() {
 	double[] inputArray = new double[214];
+	Arrays.fill(inputArray, 0);
 	int i = 0;
+	// 0-51 are inputs for cards I currently have.
 	for (Boolean input : CardsIHave) {
-	    if (input) {
+	    if (input)
 		inputArray[i] = 1;
-	    } else {
-		inputArray[i] = 0;
-	    }
 	    i++;
 	}
-	// i should = 52 - 1
+	// 52-103 are inputs for cards I have seen.
 	for (Boolean input : CardsSeen) {
-	    if (input) {
+	    if (input)
 		inputArray[i] = 1;
-	    } else {
-		inputArray[i] = 0;
-	    }
 	    i++;
 	}
-	// i should = 104 - 1
-	for (i = i; i < i + CardInPlay; i++) {
-	    inputArray[i] = 0;
-	}
-	inputArray[i + 1] = 1;
-	for (i = i + 2; i < 156; i++) {
-	    inputArray[i] = 0;
-	}
-	// i should = 156 - 1
-	System.out.println("a\t"+ i +"\t" + CardToPlay);
-	for (i = i; i < i + CardToPlay; i++) {
-	    inputArray[i] = 0;
-	}
-	System.out.println("b\t"+ i +"\t" + CardToPlay);
-	inputArray[i + 1] = 1;
-	for (i = i + 2; i < 213; i++) {
-	    inputArray[i] = 0;
-	}
+	// 104-155 are inputs for cards in play.
+	if (CardInPlay > 0)
+	    inputArray[104 + CardInPlay] = 1;
+	// 156-207 are inputs for cards I currently have.
+	if (CardToPlay > 0)
+	    inputArray[156 + CardToPlay] = 1;
 	switch (gameMode) {
 	case 0:
+	case 14:
 	    inputArray[208] = 1;
 	    break;
+	case 15:
 	case 1:
 	    inputArray[209] = 1;
 	    break;
@@ -214,36 +194,16 @@ public class NN {
 	// Game mode inputs are as follows: 0 = misere, 1 = no trump, 2 = spades
 	// 11 = spades, 10 = clubs, 12 = hearts, 13 = diamonds
 	// The choice game modes values come form the enum
-
 	network.setInput(inputArray);
     }
 
-    private void calculate() {
-
-    }
-
     public void printNetworkInputLables() {
-	setInputs();
-	network.calculate();
 	Neuron[] rons = network.getInputNeurons();
+	int i = 0;
 	for (Neuron k : rons) {
-	    System.out.print(k.getNetInput() + ", ");
+	    System.out.print("(" + i + ", " + k.getNetInput() + "), ");
+	    i++;
 	}
 	System.out.println();
     }
-    // private void go()
-    // {
-    // calculate(1,0,0);
-    // calculate(0,1,0);
-    // calculate(0,0,1);
-    // }
-
-    // private void calculate(double... input)
-    // {
-    // network.setInput(input);
-    // network.calculate();
-    // double[] output = network.getOutput();
-    // Double answer = output[0];
-    // System.out.println(answer);
-    // }
 }

@@ -24,6 +24,10 @@ public class Player {
 	return hand.size();
     }
 
+    public void acceptGameMode(int gm) {
+	neuralNetwork.setGameMode(gm);
+    }
+
     public ArrayList<Card> getHand() {
 	return hand;
     }
@@ -33,10 +37,18 @@ public class Player {
 	neuralNetwork.addCardIHave(card);
     }
 
+    public void addCardSeen(Card c) {
+	neuralNetwork.addCardSeen(c);
+    }
+
     public Card playCard(ArrayList<Card> legalMoves, Card otherPlayersCard) {
+	if (otherPlayersCard != null)
+	    neuralNetwork.setCardsInPlay(otherPlayersCard);
 	HashMap<Card, double[]> playResult = new HashMap<Card, double[]>();
-	for(Card handCard : hand){
-	    neuralNetwork.addCardsToPlay(handCard);//sets the card about to be played. This is unset in the 
+	for (Card handCard : legalMoves) {
+	    neuralNetwork.setCardsToPlay(handCard);// sets the card about to be
+						   // played. This is unset in
+						   // the
 	    neuralNetwork.removeCardIHave(handCard);
 	    playResult.put(handCard, neuralNetwork.computeCurrentInputs());
 	    neuralNetwork.addCardIHave(handCard);
@@ -44,64 +56,19 @@ public class Player {
 	double[] results;
 	double currentResult, bestResult = -100;
 	Card bestCard = null;
-	for(Card cardResult : playResult.keySet()){
-	 results = playResult.get(cardResult);// 0 == win, 1 == draw, 2 == loose
-	    currentResult = (2 * results[0] + results[1])
-		    / (2 * results[2] + 1) - (2 * results[2] + results[1])
-		    / (2 * results[0] + 1);
+	for (Card cardResult : playResult.keySet()) {
+	    results = playResult.get(cardResult);// 0 == win, 1 == draw, 2 ==
+						 // loose
+	    currentResult = ((2 * results[0] + results[1]) / (2 * results[2] + 1))
+		    - ((2 * results[2] + results[1]) / (2 * results[0] + 1));
 	    if (currentResult > bestResult) {
 		bestCard = cardResult;
 		bestResult = currentResult;
 	    }
 	}
-	System.out.println("best card = " + bestCard);
+	// System.out.println("best card = " + bestCard);
+	hand.remove(bestCard);
 	return bestCard;
-    }
-
-    public void sortHand() {
-	ArrayList<Card> newHand = new ArrayList<>();
-	Card tempCard = hand.iterator().next();
-	hand.remove(tempCard);
-	newHand.add(tempCard);
-
-	while (hand.size() > 0) {
-	    tempCard = hand.iterator().next();
-	    hand.remove(tempCard);
-	    boolean added = false;
-
-	    for (int i = 0; i < newHand.size() & !added; i++) {
-		if (tempCard.getSuit().getCardSuit() < newHand.get(i).getSuit()
-			.getCardSuit()) {
-		    newHand.add(i, tempCard);
-		    added = true;
-		} else {
-		    if (i == newHand.size() - 1) { // Why -1 here and +1 on the
-			// next line IDK, but it works...
-			newHand.add(i + 1, tempCard);
-			added = true;
-		    }
-		    if (tempCard.getSuit().getCardSuit() == newHand.get(i)
-			    .getSuit().getCardSuit()) {
-			if (tempCard.getValue().getCardValue() < newHand.get(i)
-				.getValue().getCardValue()) {
-			    newHand.add(i, tempCard);
-			    added = true;
-			}
-		    }
-		}
-	    }
-	}
-	this.hand = newHand;
-    }
-
-    public Card getHandCardObj(Card c) {
-	for (Card handCard : hand) {
-	    if (handCard.getSuit() == c.getSuit()
-		    && handCard.getValue() == c.getValue()) {
-		return handCard;
-	    }
-	}
-	return null;
     }
 
     public ArrayList<Card> discardSix() {
@@ -145,35 +112,60 @@ public class Player {
 	}
 
 	ArrayList<Card> bestHand = new ArrayList<Card>();
-	double bestResult = -1000;
+	double bestResult = -100;
 	double currentResult;
 	for (ArrayList<Card> hand : handResults.keySet()) {
 	    double[] result = handResults.get(hand);// 0 == win, 1 == draw, 2 ==
 						    // loose
-	    currentResult = (2 * result[0] + result[1]) / (2 * result[2] + 1)
-		    - (2 * result[2] + result[1]) / (2 * result[0] + 1);
+	    currentResult = ((2 * result[0] + result[1]) / (2 * result[2] + 1))
+		    - ((2 * result[2] + result[1]) / (2 * result[0] + 1));
 	    if (currentResult > bestResult) {
 		bestHand = hand;
 		bestResult = currentResult;
 	    }
 	}
+	// current hand(12 cards) - best hand(6 cards) = Seen but discarding
+	// cards
+	this.hand.removeAll(bestHand);
+	for (Card c : this.hand)
+	    addCardSeen(c);
 	this.hand = bestHand;
 	return bestHand;
     }
 
-    public boolean acceptCard(Card c, int forcedToTake) {
-	// ANN
-	// System.out.println(c.toString());
-	if (forcedToTake == 0) {
-	    return false;
-	} else {
-	    // System.out.println();
+    public boolean acceptCardChoice(Card c, boolean forcedToTake) {
+	if (forcedToTake) {
 	    return true;
+	} else {
+	    neuralNetwork.addCardIHave(c);
+	    double[] acceptResults = neuralNetwork.computeCurrentInputs();
+	    neuralNetwork.removeCardIHave(c);
+
+	    neuralNetwork.addCardSeen(c);
+	    double[] passResults = neuralNetwork.computeCurrentInputs();
+	    neuralNetwork.removeCardSeen(c);
+
+	    double acceptResult = ((2 * acceptResults[0] + acceptResults[1]) / (2 * acceptResults[2] + 1))
+		    - ((2 * acceptResults[2] + acceptResults[1]) / (2 * acceptResults[0] + 1));
+
+	    double passResutlt = ((2 * passResults[0] + passResults[1]) / (2 * passResults[2] + 1))
+		    - ((2 * passResults[2] + passResults[1]) / (2 * passResults[0] + 1));
+
+	    if (acceptResult > passResutlt) {
+		return true;
+	    } else {
+		neuralNetwork.addCardSeen(c);
+		return false;
+	    }
 	}
     }
 
     public int chooseGamemode(ArrayList<Integer> gameModesAvailable) {
 	HashMap<Integer, double[]> gmResults = new HashMap<Integer, double[]>();
+	int bestGameMode = -1;
+	double bestResult = -1000;
+	double currentResult;
+	double[] results;
 	for (int gm : gameModesAvailable) {
 	    if (gm == 3) {
 		for (int i = 0; i < 4; i++) {
@@ -186,19 +178,11 @@ public class Player {
 		gmResults.put(gm, neuralNetwork.computeGameMode(gm));
 	    }
 	}
-	return computeGMResults(gmResults);
-    }
 
-    private int computeGMResults(HashMap<Integer, double[]> gmResults) {
-	int bestGameMode = -1;
-	double bestResult = -1000;
-	double currentResult;
-	double[] results;
 	for (int gameMode : gmResults.keySet()) {
 	    results = gmResults.get(gameMode);// 0 == win, 1 == draw, 2 == loose
-	    currentResult = (2 * results[0] + results[1])
-		    / (2 * results[2] + 1) - (2 * results[2] + results[1])
-		    / (2 * results[0] + 1);
+	    currentResult = ((2 * results[0] + results[1]) / (2 * results[2] + 1))
+		    - ((2 * results[2] + results[1]) / (2 * results[0] + 1));
 	    if (currentResult > bestResult) {
 		bestGameMode = gameMode;
 		bestResult = currentResult;

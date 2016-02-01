@@ -18,8 +18,8 @@ public class GameDriver {
     private Scanner in;
     private boolean player1GoesFirst;
     private Deck deck;
-    private Player player1;
-    private Player player2;
+    private Player player1, player2;
+    private int player1Rounds = 0, player2Rounds = 0;
     private ArrayList<Integer> player1Modes, player2Modes;
     private BasicModeLayout gameMode;
 
@@ -30,33 +30,48 @@ public class GameDriver {
     }
 
     private void driver() {
-	deck = new Deck();
 	player1 = new Player();
 	player2 = new Player();
-
+	populateGameModeArrays();
 	player1GoesFirst = getRandomBoolean();
-	setUpGame();
-	chooseGameMode();
-	gameMode.playMode();
+
+	for (int i = 0; i < 8; i++) {
+	    deck = new Deck();
+	    setUpGame();
+	    chooseGameMode();
+	    boolean b = gameMode.playMode();
+	    if (b)
+		player1Rounds++;
+	    else
+		player2Rounds++;
+	    player1GoesFirst = !player1GoesFirst;
+	}
+	System.out.println("\n\nplayer"
+		+ ((player1Rounds > player2Rounds) ? 1 : 2)
+		+ " wins, "
+		+ ((player1Rounds > player2Rounds) ? player1Rounds
+			: player2Rounds)
+		+ " rounds to "
+		+ ((player1Rounds < player2Rounds) ? player1Rounds
+			: player2Rounds) + " rounds.");
     }
 
     private void chooseGameMode() {
 	int gm;
 	if (player1GoesFirst) {
-	    System.out.println("Player 1 chooses game mode.");
 	    gm = player1.chooseGamemode(player1Modes);
+	    player2.acceptGameMode(gm);
 	    if (gm >= 3)
-		player1Modes.remove(3);
+		player1Modes.remove((Integer) 3);
 	    else
-		player1Modes.remove(gm);
-
+		player1Modes.remove((Integer) gm);
 	} else {
-	    System.out.println("Player 2 chooses game mode.");
 	    gm = player2.chooseGamemode(player2Modes);
+	    player1.acceptGameMode(gm);
 	    if (gm >= 3)
-		player2Modes.remove(3);
+		player2Modes.remove((Integer) 3);
 	    else
-		player2Modes.remove(gm);
+		player2Modes.remove((Integer) gm);
 	}
 
 	switch (gm) {
@@ -123,7 +138,6 @@ public class GameDriver {
 		player1.addCardToHand(deck.dealCard());
 	    }
 	}
-	populateGameModeArrays();
     }
 
     public boolean getRandomBoolean() {
