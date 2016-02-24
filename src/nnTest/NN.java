@@ -99,6 +99,7 @@ public class NN {
     }
 
     public double[] compute6Hand() {
+	network.randomizeWeights();
 	double[] results = new double[3];
 	setInputs();
 	network.calculate();
@@ -115,7 +116,7 @@ public class NN {
     }
 
     public double[] computeGameMode(int gameMode) {
-	// network.randomizeWeights();
+	network.randomizeWeights();
 	this.gameMode = gameMode;
 	double[] results = new double[3];
 	setInputs();
@@ -129,6 +130,7 @@ public class NN {
     }
 
     public double[] computeCurrentInputs() {
+	network.randomizeWeights();
 	double[] results = new double[3];
 	setInputs();
 	network.calculate();
@@ -195,6 +197,20 @@ public class NN {
 	// 11 = spades, 10 = clubs, 12 = hearts, 13 = diamonds
 	// The choice game modes values come form the enum
 	network.setInput(inputArray);
+    }
+    
+    public double[] getOutput(){
+	return network.getOutput();
+    }
+    
+    public double[] getInput(){
+	double[] inputs = new double[214];
+	int i = 0;
+	for(Neuron n : network.getInputNeurons()){
+	    inputs[i] = n.getNetInput();
+	    i++;
+	}
+	return inputs;
     }
 
     public void printNetworkInputLables() {

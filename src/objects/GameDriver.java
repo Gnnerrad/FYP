@@ -9,12 +9,22 @@ import gameModes.ChoiceGameMode;
 import gameModes.MisereGameMode;
 import gameModes.TrumpGameMode;
 
+import java.io.PrintWriter;
+import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Random;
 import java.util.Scanner;
 
+import org.neuroph.core.Layer;
+import org.neuroph.core.NeuralNetwork;
+import org.neuroph.core.Neuron;
+import org.neuroph.core.Weight;
+
+import td.temporalDifference;
+
 public class GameDriver {
 
+    private ArrayList<IOTuple> neuralNetworkData = new ArrayList<IOTuple>();
     private Scanner in;
     private boolean player1GoesFirst;
     private Deck deck;
@@ -22,38 +32,49 @@ public class GameDriver {
     private int player1Rounds = 0, player2Rounds = 0;
     private ArrayList<Integer> player1Modes, player2Modes;
     private BasicModeLayout gameMode;
+    private temporalDifference td = new temporalDifference();
 
     public static void main(String[] args) {
 
 	GameDriver driver = new GameDriver();
-	driver.driver();
+	 driver.driver();
+//	driver.networkTest();
     }
 
     private void driver() {
-	player1 = new Player();
-	player2 = new Player();
-	populateGameModeArrays();
-	player1GoesFirst = getRandomBoolean();
+	for (int z = 0; z < 100; z++) {
+	    System.out.println(z);
+	    player1 = new Player(1, neuralNetworkData);
+	    player2 = new Player(2, neuralNetworkData);
+	    populateGameModeArrays();
+	    player1GoesFirst = getRandomBoolean();
 
-	for (int i = 0; i < 8; i++) {
-	    deck = new Deck();
-	    setUpGame();
-	    chooseGameMode();
-	    boolean b = gameMode.playMode();
-	    if (b)
-		player1Rounds++;
-	    else
-		player2Rounds++;
-	    player1GoesFirst = !player1GoesFirst;
+	    for (int i = 0; i < 8; i++) {
+		deck = new Deck();
+		setUpGame();
+		chooseGameMode();
+		boolean b = gameMode.playMode();
+		if (b)
+		    player1Rounds++;
+		else
+		    player2Rounds++;
+		player1GoesFirst = !player1GoesFirst;
+	    }
+	    if (player1Rounds > player2Rounds) {
+	    System.out.println("\nplayer1 wins " + player1Rounds + " to " + player2Rounds);
+		td.setOutcome(1);
+		td.setData(neuralNetworkData);
+	    } else if (player1Rounds < player2Rounds) {
+		 System.out.println("\nplayer2 wins " + player2Rounds + " to "
+		 + player1Rounds);
+		td.setOutcome(2);
+		td.setData(neuralNetworkData);
+	    } else {
+		 System.out.println("\nIt was a draw");
+		td.setOutcome(0);
+		td.setData(neuralNetworkData);
+	    }
 	}
-	System.out.println("\n\nplayer"
-		+ ((player1Rounds > player2Rounds) ? 1 : 2)
-		+ " wins, "
-		+ ((player1Rounds > player2Rounds) ? player1Rounds
-			: player2Rounds)
-		+ " rounds to "
-		+ ((player1Rounds < player2Rounds) ? player1Rounds
-			: player2Rounds) + " rounds.");
     }
 
     private void chooseGameMode() {
@@ -78,34 +99,27 @@ public class GameDriver {
 	// trickle down case, will enter case 14 as there is no break statement
 	case 0:
 	case 14:
-	    gameMode = new MisereGameMode(player1, player2, player1GoesFirst,
-		    deck);
+	    gameMode = new MisereGameMode(player1, player2, player1GoesFirst, deck);
 	    break;
 	case 1:
 	case 15:
-	    gameMode = new BasicModeLayout(player1, player2, player1GoesFirst,
-		    deck);
+	    gameMode = new BasicModeLayout(player1, player2, player1GoesFirst, deck);
 	    break;
 	case 2:
 	case 11:
-	    gameMode = new TrumpGameMode(player1, player2, player1GoesFirst,
-		    deck);
+	    gameMode = new TrumpGameMode(player1, player2, player1GoesFirst, deck);
 	    break;
 	case 10:
-	    gameMode = new ChoiceGameMode(player1, player2, player1GoesFirst,
-		    deck, 0);
+	    gameMode = new ChoiceGameMode(player1, player2, player1GoesFirst, deck, 0);
 	    break;
 	case 12:
-	    gameMode = new ChoiceGameMode(player1, player2, player1GoesFirst,
-		    deck, 2);
+	    gameMode = new ChoiceGameMode(player1, player2, player1GoesFirst, deck, 2);
 	    break;
 	case 13:
-	    gameMode = new ChoiceGameMode(player1, player2, player1GoesFirst,
-		    deck, 3);
+	    gameMode = new ChoiceGameMode(player1, player2, player1GoesFirst, deck, 3);
 	    break;
 	default:
-	    System.out
-		    .println("There has been an error is the game mode choice switch.");
+	    System.out.println("There has been an error is the game mode choice switch.");
 	    break;
 	}
     }
@@ -143,6 +157,14 @@ public class GameDriver {
     public boolean getRandomBoolean() {
 	Random random = new Random();
 	return random.nextBoolean();
+    }
+
+    private void networkTest() {
+	NeuralNetwork oldNetwork = NeuralNetwork.load("lib/origional NN.nnet");
+	NeuralNetwork newNetwork = NeuralNetwork.load("lib/NN.nnet");
+	for (int i = 0; i < oldNetwork.getWeights().length; i++) {
+	    System.out.println(oldNetwork.getWeights()[i] + "\t" + newNetwork.getWeights()[i]);
+	}
     }
 }
 

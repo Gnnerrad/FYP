@@ -22,10 +22,10 @@ public class TrumpGameMode extends BasicModeLayout {
 	while (player1.handSize() > 0 && player2.handSize() > 0) {
 	    if (player1turn) {
 		card1 = player1.playCard(
-			lmg.legalMoves(player1.getHand(), nullCard, false, 0),
+			lmg.legalMoves(player1.getHand(), nullCard, false, 1),
 			nullCard);
 		card2 = player2.playCard(
-			lmg.legalMoves(player2.getHand(), card1, false, 0),
+			lmg.legalMoves(player2.getHand(), card1, false, 1),
 			card1);
 
 		if (calculateWinner(card1, card2)) {
@@ -38,10 +38,10 @@ public class TrumpGameMode extends BasicModeLayout {
 		}
 	    } else {
 		card1 = player2.playCard(
-			lmg.legalMoves(player2.getHand(), nullCard, false, 0),
+			lmg.legalMoves(player2.getHand(), nullCard, false, 1),
 			nullCard);
 		card2 = player1.playCard(
-			lmg.legalMoves(player1.getHand(), card1, false, 0),
+			lmg.legalMoves(player1.getHand(), card1, false, 1),
 			card1);
 
 		if (calculateWinner(card1, card2)) {
