@@ -1,25 +1,22 @@
 package td;
 
-import java.nio.channels.NetworkChannel;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Random;
 
 import objects.IOTuple;
+import objects.Writer;
 
 import org.neuroph.core.NeuralNetwork;
 import org.neuroph.core.data.DataSet;
-import org.neuroph.core.learning.error.ErrorFunction;
 import org.neuroph.nnet.learning.BackPropagation;
-import org.neuroph.nnet.learning.MomentumBackpropagation;
 
 public class temporalDifference {
-    private NeuralNetwork network = NeuralNetwork.load("lib/NN.nnet");
+    private NeuralNetwork<BackPropagation> network = NeuralNetwork.load("lib/NN.nnet");
     private ArrayList<IOTuple> neuralNetworkData;
     private BackPropagation backprop = new BackPropagation();
-    private int outcome;
-    private double learningRate = 0.00001;
-    private double lambda = 0.01;
+    private Writer writer = new Writer();
+    private int outcome, gameNumber;
+    private double learningRate = 0.00001, lambda = 0.01;
+    private boolean writeGame;
 
     public temporalDifference() {
 	backprop.setNeuralNetwork(network);
@@ -29,8 +26,12 @@ public class temporalDifference {
 	this.outcome = outcome;
     }
 
-    public void setData(ArrayList<IOTuple> data) {
-	neuralNetworkData = data;
+    public void setDataToLearn(ArrayList<IOTuple> data, int gameNumber, boolean writeGame) {
+	this.neuralNetworkData = data;
+	this.gameNumber = gameNumber;
+	this.writeGame = writeGame;
+	if (writeGame)
+	    writer.writeGameDecisions(gameNumber, data);
 	learn();
     }
 
@@ -46,21 +47,26 @@ public class temporalDifference {
 	    output[0] = 1;
 	    output[1] = 0;
 	    output[2] = 0;
+	    if (writeGame)
+		writer.writeGameOutcome(gameNumber, output, gameData.getId());
 	} else if ((gameData.getId() == 2 && outcome == 1) || (gameData.getId() == 1 && outcome == 2)) {
 	    output[0] = 0;
 	    output[1] = 0;
 	    output[2] = 1;
+	    if (writeGame)
+		writer.writeGameOutcome(gameNumber, output, gameData.getId());
 	} else {
 	    output[0] = 0;
 	    output[1] = 1;
 	    output[2] = 0;
+	    if (writeGame)
+		writer.writeGameOutcome(gameNumber, output, 0);
 	}
-
 	learningData.addRow(gameData.getInput(), output);
 	backprop.setLearningRate(learningRate);
 	network.learn(learningData, backprop);
 
-	// Everystep but the last step.
+	// Every step but the last step.
 	for (int time = neuralNetworkData.size() - 2; time >= 0; time--) {
 	    gameData = neuralNetworkData.get(neuralNetworkData.size() - 1);
 

@@ -1,0 +1,8 @@
+Each odd numbered line is an input line.
+The following even numbered line is the corresponding output for the network at the given game.
+
+The outcome of the game is formatted as such:
+& player, [outcome]
+
+For all line it will be nessary to remove [] and spaces, then split the line by the ','.
+An '&' will also have to be removed form the final/outcome line. 

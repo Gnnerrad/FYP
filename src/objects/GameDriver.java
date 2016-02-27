@@ -37,12 +37,17 @@ public class GameDriver {
     public static void main(String[] args) {
 
 	GameDriver driver = new GameDriver();
-	 driver.driver();
-//	driver.networkTest();
+	driver.driver();
+	// driver.networkTest();
     }
 
     private void driver() {
-	for (int z = 0; z < 100; z++) {
+	boolean writeGame = false;
+	for (int z = 0; z < 100000; z++) {
+	    if (z % 1000 == 0 || z == 0)
+		writeGame = true;
+	    else
+		writeGame = false;
 	    System.out.println(z);
 	    player1 = new Player(1, neuralNetworkData);
 	    player2 = new Player(2, neuralNetworkData);
@@ -61,18 +66,17 @@ public class GameDriver {
 		player1GoesFirst = !player1GoesFirst;
 	    }
 	    if (player1Rounds > player2Rounds) {
-	    System.out.println("\nplayer1 wins " + player1Rounds + " to " + player2Rounds);
+		System.out.println("\nplayer1 wins " + player1Rounds + " to " + player2Rounds);
 		td.setOutcome(1);
-		td.setData(neuralNetworkData);
+		td.setDataToLearn(neuralNetworkData, z, writeGame);
 	    } else if (player1Rounds < player2Rounds) {
-		 System.out.println("\nplayer2 wins " + player2Rounds + " to "
-		 + player1Rounds);
+		System.out.println("\nplayer2 wins " + player2Rounds + " to " + player1Rounds);
 		td.setOutcome(2);
-		td.setData(neuralNetworkData);
+		td.setDataToLearn(neuralNetworkData, z, writeGame);
 	    } else {
-		 System.out.println("\nIt was a draw");
+		System.out.println("\nIt was a draw");
 		td.setOutcome(0);
-		td.setData(neuralNetworkData);
+		td.setDataToLearn(neuralNetworkData, z, writeGame);
 	    }
 	}
     }
