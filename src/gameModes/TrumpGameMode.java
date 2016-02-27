@@ -54,14 +54,14 @@ public class TrumpGameMode extends BasicModeLayout {
 		}
 	    }
 	}
-	System.out.println("player"
-		+ ((player1Tricks > player2Tricks) ? 1 : 2)
-		+ " wins, "
-		+ ((player1Tricks > player2Tricks) ? player1Tricks
-			: player2Tricks)
-		+ " tricks to "
-		+ ((player1Tricks < player2Tricks) ? player1Tricks
-			: player2Tricks) + " tricks.");
+//	System.out.println("player"
+//		+ ((player1Tricks > player2Tricks) ? 1 : 2)
+//		+ " wins, "
+//		+ ((player1Tricks > player2Tricks) ? player1Tricks
+//			: player2Tricks)
+//		+ " tricks to "
+//		+ ((player1Tricks < player2Tricks) ? player1Tricks
+//			: player2Tricks) + " tricks.");
 	return ((player1Tricks > player2Tricks) ? true : false);
     }
 

@@ -216,7 +216,7 @@ public class Player {
 		}
 	    }
 	}
-	System.out.println("best mode = " + bestGameMode);
+//	System.out.println("best mode = " + bestGameMode);
 	neuralNetwork.setGameMode(bestGameMode);
 	neuralNetworkData.add(new IOTuple(playerNumber, bestInput, bestOutput));
 	return bestGameMode;

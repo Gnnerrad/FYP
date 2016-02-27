@@ -30,8 +30,10 @@ public class temporalDifference {
 	this.neuralNetworkData = data;
 	this.gameNumber = gameNumber;
 	this.writeGame = writeGame;
-	if (writeGame)
+	if (writeGame){
 	    writer.writeGameDecisions(gameNumber, data);
+	    network.save("data/"+gameNumber+".nnet");
+	}
 	learn();
     }
 

@@ -9,9 +9,13 @@ import gameModes.ChoiceGameMode;
 import gameModes.MisereGameMode;
 import gameModes.TrumpGameMode;
 
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.Writer;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Random;
 import java.util.Scanner;
 
@@ -29,7 +33,8 @@ public class GameDriver {
     private boolean player1GoesFirst;
     private Deck deck;
     private Player player1, player2;
-    private int player1Rounds = 0, player2Rounds = 0;
+    private int player1Rounds, player2Rounds, player1Wins = 0, player2Wins = 0, drawCount = 0;
+    private double totalTime = 0;
     private ArrayList<Integer> player1Modes, player2Modes;
     private BasicModeLayout gameMode;
     private temporalDifference td = new temporalDifference();
@@ -43,12 +48,18 @@ public class GameDriver {
 
     private void driver() {
 	boolean writeGame = false;
+	double time;
 	for (int z = 0; z < 100000; z++) {
+	    double start = System.currentTimeMillis();
 	    if (z % 1000 == 0 || z == 0)
 		writeGame = true;
 	    else
 		writeGame = false;
 	    System.out.println(z);
+
+	    player1Rounds = 0;
+	    player2Rounds = 0;
+	    neuralNetworkData.clear();
 	    player1 = new Player(1, neuralNetworkData);
 	    player2 = new Player(2, neuralNetworkData);
 	    populateGameModeArrays();
@@ -66,18 +77,29 @@ public class GameDriver {
 		player1GoesFirst = !player1GoesFirst;
 	    }
 	    if (player1Rounds > player2Rounds) {
-		System.out.println("\nplayer1 wins " + player1Rounds + " to " + player2Rounds);
+		player1Wins++;
+		System.out.println("player1 wins " + player1Rounds + " to " + player2Rounds);
 		td.setOutcome(1);
 		td.setDataToLearn(neuralNetworkData, z, writeGame);
 	    } else if (player1Rounds < player2Rounds) {
-		System.out.println("\nplayer2 wins " + player2Rounds + " to " + player1Rounds);
+		player2Wins++;
+		System.out.println("player2 wins " + player2Rounds + " to " + player1Rounds);
 		td.setOutcome(2);
 		td.setDataToLearn(neuralNetworkData, z, writeGame);
 	    } else {
-		System.out.println("\nIt was a draw");
+		drawCount++;
+		System.out.println("It was a draw");
 		td.setOutcome(0);
 		td.setDataToLearn(neuralNetworkData, z, writeGame);
 	    }
+	    time = System.currentTimeMillis() - start;
+	    totalTime += time;
+	    System.out.println("time = " + time + "\n");
+	}
+	try (PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter("data/0data.txt", true)))) {
+	    out.println("Total Time Taken = " + totalTime + "\nPlayer 1 wins = " + player1Wins + "\nPlayer 2 wins = " + player2Wins + "\nDraws = " + drawCount);
+	} catch (IOException e) {
+
 	}
     }
 
