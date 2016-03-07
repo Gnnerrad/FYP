@@ -1,93 +1,120 @@
+//package td;
+//
+//import java.util.ArrayList;
+//
+//import objects.IOTuple;
+//
+//import org.neuroph.core.NeuralNetwork;
+//import org.neuroph.core.data.DataSet;
+//import org.neuroph.nnet.MultiLayerPerceptron;
+//import org.neuroph.nnet.learning.DynamicBackPropagation;
+//
+//public class temporalDifference {
+//    private NeuralNetwork network = NeuralNetwork.createFromFile("lib/NN.nnet");
+//    private MultiLayerPerceptron nn = MultiLayerPerceptron.createFromFile("lib/NN.nnet");
+//    private ArrayList<IOTuple> neuralNetworkData;
+//    private DynamicBackPropagation backprop = new DynamicBackPropagation();
+//     private Writer writer = new Writer();
+//    private int outcome;
+//    private double learningRate = 0.00001, lambda = 0.01;
+//    private DataSet learningData;
+//
+//     private boolean writeGame;
+//
+//    public temporalDifference() {
+//	backprop.setNeuralNetwork(network);
+//    }
+//
+//    public void setOutcome(int outcome) {
+//	this.outcome = outcome;
+//    }
+//
+//    public void setDataToLearn(ArrayList<IOTuple> data, boolean writeGame) {
+//	this.neuralNetworkData = data;
+//	learningData = new DataSet(neuralNetworkData.get(0).getInput().length, neuralNetworkData.get(0).getOutput().length);
+//	 Paramaters describe sizes of input and output
+//	for (IOTuple tuple : data) {
+//	    learningData.addRow(tuple.getInput(), tuple.getOutput());
+//	}
+//	System.out.println(learningData.size());
+//	learn();
+//    }
+//
+//    private void learn() {
+//	System.out.println("Test");
+//	 Double[] ori = network.getWeights();
+//	double[] output = new double[3];
+//	backprop.setUseDynamicMomentum(false);
+//	backprop.setMaxIterations(500);
+//	backprop.setLearningRateChange(lambda);
+//	backprop.setLearningRate(learningRate);
+//	network.learn(learningData, backprop);
+//	for(int i = 0; i<10; i++){
+//	    backprop.doLearningEpoch(learningData);
+//	    System.out.println(backprop.getLearningRate());
+//	}
+//    }
+//}
+
 package td;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import objects.IOTuple;
-import objects.Writer;
 
 import org.neuroph.core.NeuralNetwork;
 import org.neuroph.core.data.DataSet;
 import org.neuroph.nnet.learning.BackPropagation;
+import org.neuroph.nnet.learning.DynamicBackPropagation;
 
 public class temporalDifference {
     private NeuralNetwork<BackPropagation> network = NeuralNetwork.load("lib/NN.nnet");
     private ArrayList<IOTuple> neuralNetworkData;
     private BackPropagation backprop = new BackPropagation();
-    private Writer writer = new Writer();
-    private int outcome, gameNumber;
-    private double learningRate = 0.00001, lambda = 0.01;
+    // private Writer writer = new Writer();
+    private double learningRate = 0.00001, lambda = 0.5;
+    private DataSet learningData;
     private boolean writeGame;
 
     public temporalDifference() {
 	backprop.setNeuralNetwork(network);
     }
 
-    public void setOutcome(int outcome) {
-	this.outcome = outcome;
-    }
+    // public void setDataToLearn(ArrayList<IOTuple> data, boolean writeGame) {
+    // this.neuralNetworkData = data;
+    // learningData = new DataSet(neuralNetworkData.get(0).getInput().length,
+    // neuralNetworkData.get(0).getOutput().length);
+    // // Paramaters describe sizes of input and output
+    // for (IOTuple tuple : data) {
+    // learningData.addRow(tuple.getInput(), tuple.getOutput());
+    // }
+    // System.out.println(learningData.size());
+    // this.writeGame = writeGame;
+    // if (writeGame) {
+    // // writer.writeGameDecisions(gameNumber, data);
+    // // network.save("data/" + gameNumber + ".nnet");
+    // }
+    // learn();
+    // }
 
-    public void setDataToLearn(ArrayList<IOTuple> data, int gameNumber, boolean writeGame) {
-	this.neuralNetworkData = data;
-	this.gameNumber = gameNumber;
-	this.writeGame = writeGame;
-	if (writeGame){
-	    writer.writeGameDecisions(gameNumber, data);
-	    network.save("data/"+gameNumber+".nnet");
+    public void learn(ArrayList<IOTuple> data) {
+	learningData = new DataSet(data.get(0).getInput().length, data.get(1).getOutput().length);
+	int lambdaPower = 0;
+//	Double[] weights = network.getWeights();
+//	for (int i = 0; i < 20; i++) {
+//	    System.out.print(weights[i]+", ");
+//	}
+	for (int count = data.size() - 1; count > 0; count--) {
+	    learningData.clear();
+	    learningData.addRow(data.get(count - 1).getInput(), data.get(count).getOutput());
+	    backprop.setLearningRate(learningRate * Math.pow(lambda, lambdaPower));
+	    backprop.learn(learningData, 1000);
 	}
-	learn();
-    }
-
-    private void learn() {
-	// Double[] ori = network.getWeights();
-	DataSet learningData = new DataSet(neuralNetworkData.get(0).getInput().length, neuralNetworkData.get(0).getOutput().length);
-	double[] output = new double[3];
-	backprop.setMaxIterations(1);
-
-	// special case for the last step.
-	IOTuple gameData = neuralNetworkData.get(neuralNetworkData.size() - 1);
-	if ((outcome == 1 && gameData.getId() == 1) || (gameData.getId() == 2 && outcome == 2)) {
-	    output[0] = 1;
-	    output[1] = 0;
-	    output[2] = 0;
-	    if (writeGame)
-		writer.writeGameOutcome(gameNumber, output, gameData.getId());
-	} else if ((gameData.getId() == 2 && outcome == 1) || (gameData.getId() == 1 && outcome == 2)) {
-	    output[0] = 0;
-	    output[1] = 0;
-	    output[2] = 1;
-	    if (writeGame)
-		writer.writeGameOutcome(gameNumber, output, gameData.getId());
-	} else {
-	    output[0] = 0;
-	    output[1] = 1;
-	    output[2] = 0;
-	    if (writeGame)
-		writer.writeGameOutcome(gameNumber, output, 0);
-	}
-	learningData.addRow(gameData.getInput(), output);
-	backprop.setLearningRate(learningRate);
-	network.learn(learningData, backprop);
-
-	// Every step but the last step.
-	for (int time = neuralNetworkData.size() - 2; time >= 0; time--) {
-	    gameData = neuralNetworkData.get(neuralNetworkData.size() - 1);
-
-	    network.setInput(gameData.getInput());
-	    network.calculate();
-	    output = network.getOutput();
-
-	    learningData.addRow(gameData.getInput(), output);
-	    backprop.setLearningRate(learningRate * Math.pow(lambda, (neuralNetworkData.size() - (time + 2))));
-	    network.learn(learningData, backprop);
-	}
-	// Double[] fin = network.getWeights();
-	// double biggestChange = 0, smallestChange = 100;
-	// for (int i = 0; i < fin.length; i++) {
-	// double delta = Math.abs(ori[i] - fin[i]);
-	// if(delta > biggestChange) biggestChange = delta;
-	// if(delta < smallestChange) smallestChange = delta;
-	// }
-	// System.out.println(biggestChange + "\t" + smallestChange);
 	network.save("lib/NN.nnet");
+	// weights = network.getWeights();
+	// for (int i = 0; i < 20; i++) {
+	// System.out.print(weights[i] + ", ");
+	// }
     }
 }

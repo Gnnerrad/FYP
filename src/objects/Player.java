@@ -11,21 +11,14 @@ package objects;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Random;
-import java.util.Scanner;
 import java.util.concurrent.ThreadLocalRandom;
 
-import javax.naming.spi.DirStateFactory.Result;
-
 import nnTest.NN;
-import objects.Card.CardValue;
-import objects.Card.Suit;
-import td.temporalDifference;
 
 public class Player {
     private ArrayList<Card> hand;
     private NN neuralNetwork = new NN();
-    private ArrayList<IOTuple> neuralNetworkData;
+    public ArrayList<IOTuple> neuralNetworkData;
     protected int playerNumber;
 
     public Player(int playerNumber, ArrayList<IOTuple> neuralNetworkData) {
@@ -76,7 +69,6 @@ public class Player {
 	    }
 	    neuralNetwork.addCardIHave(handCard);
 	}
-	// System.out.println("best card = " + bestCard);
 	hand.remove(bestCard);
 	neuralNetworkData.add(new IOTuple(playerNumber, bestInput, bestOutput));
 	return bestCard;
@@ -111,7 +103,7 @@ public class Player {
 			neuralNetwork.addCardIHave(this.hand.get(g));
 			hand.add(this.hand.get(g));
 		    }
-		    currentOutput = neuralNetwork.compute6Hand();
+		    currentOutput = neuralNetwork.computeCurrentInputs();
 		    currentResult = ((2 * currentOutput[0] + currentOutput[1]) / (2 * currentOutput[2] + 1)) - ((2 * currentOutput[2] + currentOutput[1]) / (2 * currentOutput[0] + 1));
 		    if (currentResult > bestResult) {
 			bestHand = hand;
@@ -143,6 +135,7 @@ public class Player {
     public boolean acceptCardChoice(Card c, boolean forcedToTake) {
 	// Should I store nn results for forced card takes.
 	if (forcedToTake) {
+	    addCardToHand(c);
 	    return true;
 	} else {
 	    neuralNetwork.addCardIHave(c);
@@ -162,11 +155,12 @@ public class Player {
 	    double passResutlt = ((2 * passResults[0] + passResults[1]) / (2 * passResults[2] + 1)) - ((2 * passResults[2] + passResults[1]) / (2 * passResults[0] + 1));
 
 	    if (acceptResult > passResutlt) {
+		addCardToHand(c);
 		neuralNetworkData.add(new IOTuple(playerNumber, acceptInputs, acceptOutput));
 		return true;
 	    } else {
+		addCardSeen(c);
 		neuralNetworkData.add(new IOTuple(playerNumber, passInputs, passOutput));
-		neuralNetwork.addCardSeen(c);
 		return false;
 	    }
 	}
@@ -174,9 +168,8 @@ public class Player {
 
     public int chooseGamemode(ArrayList<Integer> gameModesAvailable) {
 	int bestGameMode = -1;
-	double[] results;
 	double currentResult, bestResult = -100;
-	double[] currentOutput, bestOutput = new double[3], bestInput = new double[214];
+	double[] results = new double[3], currentOutput = new double[3], bestOutput = new double[3], bestInput = new double[214];
 	for (int gm : gameModesAvailable) {
 	    if (gm == 3) {// if choice check every game mode.
 		for (int i = 0; i < 4; i++) {
@@ -191,20 +184,6 @@ public class Player {
 		}
 		results = neuralNetwork.computeGameMode(0);
 		currentResult = ((2 * results[0] + results[1]) / (2 * results[2] + 1)) - ((2 * results[2] + results[1]) / (2 * results[0] + 1));
-		if (currentResult > bestResult) {
-		    bestGameMode = 0;
-		    bestResult = currentResult;
-		    bestOutput = results;
-		    bestInput = neuralNetwork.getInput();
-		}
-		results = neuralNetwork.computeGameMode(1);
-		currentResult = ((2 * results[0] + results[1]) / (2 * results[2] + 1)) - ((2 * results[2] + results[1]) / (2 * results[0] + 1));
-		if (currentResult > bestResult) {
-		    bestGameMode = 1;
-		    bestResult = currentResult;
-		    bestOutput = results;
-		    bestInput = neuralNetwork.getInput();
-		}
 	    } else {
 		results = neuralNetwork.computeGameMode(gm);
 		currentResult = ((2 * results[0] + results[1]) / (2 * results[2] + 1)) - ((2 * results[2] + results[1]) / (2 * results[0] + 1));
@@ -216,7 +195,6 @@ public class Player {
 		}
 	    }
 	}
-//	System.out.println("best mode = " + bestGameMode);
 	neuralNetwork.setGameMode(bestGameMode);
 	neuralNetworkData.add(new IOTuple(playerNumber, bestInput, bestOutput));
 	return bestGameMode;

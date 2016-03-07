@@ -80,33 +80,24 @@ public class BasicModeLayout {
 	player2.discardSix();
 
 	if (player1turn) {
-	    while (deck.size() > 2) {
+	    while (deck.size() >= 2) {
 		acceptOrNext(player1);
 		acceptOrNext(player2);
 	    }
 	} else {
-	    while (deck.size() > 2) {
+	    while (deck.size() >= 2) {
 		acceptOrNext(player2);
 		acceptOrNext(player1);
 	    }
 	}
-	// System.out.println("\nplayer1's hand:");
-	// player1.printHand();
-	// System.out.println("\nplayer2's hand:");
-	// player2.printHand();
     }
 
     private void acceptOrNext(Player player) {
-	Card current = deck.dealCard();
-	if (player.acceptCardChoice(current, false)) {
-	    player.addCardToHand(current);
-	    current = deck.dealCard();
-	    player.addCardSeen(current);
+	Card card1 = deck.dealCard(), card2 = deck.dealCard();
+	if (player.acceptCardChoice(card1, false)) {
+	    player.addCardSeen(card2);
 	} else {
-	    player.addCardSeen(current);
-	    current = deck.dealCard();
-	    player.acceptCardChoice(current, true);
-	    player.addCardToHand(current);
+	    player.acceptCardChoice(card2, true);
 	}
     }
 
@@ -116,8 +107,7 @@ public class BasicModeLayout {
 			.getCardValue()) {
 	    return true; // player1 wins by trump
 	} else if (card1.getSuit() == card2.getSuit()
-		&& card1.getValue().getCardValue() < card2.getValue()
-			.getCardValue()) {
+ && card1.getValue().getCardValue() < card2.getValue().getCardValue()) {
 	    return false; // player2 wins by trump
 	} else {
 	    return true;

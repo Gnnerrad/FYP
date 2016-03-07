@@ -80,7 +80,6 @@ public class NN {
     }
 
     public void setCardsInPlay(Card c) {
-	// input
 	if (c.getValue().getCardValue() == 14) {
 	    CardInPlay = (13 * c.getSuit().getCardSuit());
 	} else {
@@ -98,25 +97,11 @@ public class NN {
 	}
     }
 
-    public double[] compute6Hand() {
-	network.randomizeWeights();
-	double[] results = new double[3];
-	setInputs();
-	network.calculate();
-	int i = 0;
-	for (double d : network.getOutput()) {
-	    results[i] = d;
-	    i++;
-	}
-	return results;
-    }
-
     public void setGameMode(int gm) {
 	gameMode = gm;
     }
 
     public double[] computeGameMode(int gameMode) {
-	network.randomizeWeights();
 	this.gameMode = gameMode;
 	double[] results = new double[3];
 	setInputs();
@@ -130,7 +115,6 @@ public class NN {
     }
 
     public double[] computeCurrentInputs() {
-	network.randomizeWeights();
 	double[] results = new double[3];
 	setInputs();
 	network.calculate();
@@ -204,6 +188,7 @@ public class NN {
     }
     
     public double[] getInput(){
+	setInputs();
 	double[] inputs = new double[214];
 	int i = 0;
 	for(Neuron n : network.getInputNeurons()){

@@ -28,7 +28,8 @@ import td.temporalDifference;
 
 public class GameDriver {
 
-    private ArrayList<IOTuple> neuralNetworkData = new ArrayList<IOTuple>();
+    private ArrayList<IOTuple> neuralNetworkData1 = new ArrayList<IOTuple>();
+    private ArrayList<IOTuple> neuralNetworkData2 = new ArrayList<IOTuple>();
     private Scanner in;
     private boolean player1GoesFirst;
     private Deck deck;
@@ -48,20 +49,21 @@ public class GameDriver {
 
     private void driver() {
 	boolean writeGame = false;
-	double time;
-	for (int z = 0; z < 100000; z++) {
+	double time, t1 = System.currentTimeMillis();
+	for (int z = 0; z < 10; z++) {
+	    System.out.println(z);
 	    double start = System.currentTimeMillis();
 	    if (z % 1000 == 0 || z == 0)
 		writeGame = true;
 	    else
 		writeGame = false;
-	    System.out.println(z);
-
 	    player1Rounds = 0;
 	    player2Rounds = 0;
-	    neuralNetworkData.clear();
-	    player1 = new Player(1, neuralNetworkData);
-	    player2 = new Player(2, neuralNetworkData);
+	    neuralNetworkData1.clear();
+	    neuralNetworkData2.clear();
+	    // neuralNetworkData.clear();
+	    player1 = new Player(1, neuralNetworkData1);
+	    player2 = new Player(2, neuralNetworkData2);
 	    populateGameModeArrays();
 	    player1GoesFirst = getRandomBoolean();
 
@@ -78,29 +80,41 @@ public class GameDriver {
 	    }
 	    if (player1Rounds > player2Rounds) {
 		player1Wins++;
-		System.out.println("player1 wins " + player1Rounds + " to " + player2Rounds);
-		td.setOutcome(1);
-		td.setDataToLearn(neuralNetworkData, z, writeGame);
+		//there are 172 choices made by each player
+		neuralNetworkData1.add(new IOTuple(173, null, new double[]{1,0,0}));
+		neuralNetworkData2.add(new IOTuple(173, null, new double[]{0,0,1}));
+		// td.setDataToLearn(neuralNetworkData, z, writeGame);
+		
 	    } else if (player1Rounds < player2Rounds) {
 		player2Wins++;
-		System.out.println("player2 wins " + player2Rounds + " to " + player1Rounds);
-		td.setOutcome(2);
-		td.setDataToLearn(neuralNetworkData, z, writeGame);
+		neuralNetworkData2.add(new IOTuple(173, null, new double[]{1,0,0}));
+		neuralNetworkData1.add(new IOTuple(173, null, new double[]{0,0,1}));
+		// td.setDataToLearn(neuralNetworkData, z, writeGame);
 	    } else {
 		drawCount++;
-		System.out.println("It was a draw");
-		td.setOutcome(0);
-		td.setDataToLearn(neuralNetworkData, z, writeGame);
+		neuralNetworkData1.add(new IOTuple(173, null, new double[]{0,1,0}));
+		neuralNetworkData2.add(new IOTuple(173, null, new double[]{0,1,0}));
+		// td.setDataToLearn(neuralNetworkData, z, writeGame);
 	    }
+	    td.learn(neuralNetworkData1);
+	    td.learn(neuralNetworkData2);
 	    time = System.currentTimeMillis() - start;
+	    System.out.println("time = " + totalTime + "\tdata size " + neuralNetworkData1.size() + "," + neuralNetworkData2.size());
 	    totalTime += time;
-	    System.out.println("time = " + time + "\n");
 	}
-	try (PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter("data/0data.txt", true)))) {
-	    out.println("Total Time Taken = " + totalTime + "\nPlayer 1 wins = " + player1Wins + "\nPlayer 2 wins = " + player2Wins + "\nDraws = " + drawCount);
-	} catch (IOException e) {
+//	System.out.println("time = " + totalTime + "\tdata size " + neuralNetworkData1.size() + "," + neuralNetworkData2.size());
+//	td.setDataToLearn(neuralNetworkData, writeGame);
 
-	}
+	time = System.currentTimeMillis() - t1;
+	System.out.println("time = " + totalTime);
+	// try (PrintWriter out = new PrintWriter(new BufferedWriter(new
+	// FileWriter("data/0data.txt", true)))) {
+	// out.println("Total Time Taken = " + totalTime + "\nPlayer 1 wins = "
+	// + player1Wins + "\nPlayer 2 wins = " + player2Wins + "\nDraws = " +
+	// drawCount);
+	// } catch (IOException e) {
+	//
+	// }
     }
 
     private void chooseGameMode() {
@@ -110,8 +124,9 @@ public class GameDriver {
 	    player2.acceptGameMode(gm);
 	    if (gm >= 3)
 		player1Modes.remove((Integer) 3);
-	    else
+	    else {
 		player1Modes.remove((Integer) gm);
+	    }
 	} else {
 	    gm = player2.chooseGamemode(player2Modes);
 	    player1.acceptGameMode(gm);
@@ -120,7 +135,6 @@ public class GameDriver {
 	    else
 		player2Modes.remove((Integer) gm);
 	}
-
 	switch (gm) {
 	// trickle down case, will enter case 14 as there is no break statement
 	case 0:
