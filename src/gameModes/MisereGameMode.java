@@ -12,16 +12,20 @@ public class MisereGameMode extends BasicModeLayout {
 
     public boolean playMode() {
 	setUpHands();
-
 	Card card1, card2;
 	while (player1.handSize() > 0 && player2.handSize() > 0) {
 	    if (player1turn) {
-		card1 = player1.playCard(
-			lmg.legalMoves(player1.getHand(), nullCard, false, 0),
-			nullCard);
-		card2 = player2.playCard(
-			lmg.legalMoves(player2.getHand(), card1, false, 0),
-			card1);
+		player1turn = player1.chooseWhoGoesFirst();
+		player1.setTurn(false);
+		player2.setTurn(false);
+	    } else {
+		player1turn = player2.chooseWhoGoesFirst();
+		player1.setTurn(false);
+		player2.setTurn(false);
+	    }
+	    if (player1turn) {
+		card1 = player1.playCard(lmg.legalMoves(player1.getHand(), nullCard, false, 0), nullCard);
+		card2 = player2.playCard(lmg.legalMoves(player2.getHand(), card1, false, 0), card1);
 
 		if (calculateWinner(card1, card2)) {
 		    player1Tricks++;
@@ -30,12 +34,8 @@ public class MisereGameMode extends BasicModeLayout {
 		    player1turn = false;
 		}
 	    } else {
-		card1 = player2.playCard(
-			lmg.legalMoves(player2.getHand(), nullCard, false, 0),
-			nullCard);
-		card2 = player1.playCard(
-			lmg.legalMoves(player1.getHand(), card1, false, 0),
-			card1);
+		card1 = player2.playCard(lmg.legalMoves(player2.getHand(), nullCard, false, 0), nullCard);
+		card2 = player1.playCard(lmg.legalMoves(player1.getHand(), card1, false, 0), card1);
 
 		if (calculateWinner(card1, card2)) {
 		    player2Tricks++;
@@ -45,20 +45,19 @@ public class MisereGameMode extends BasicModeLayout {
 		}
 	    }
 	}
-//	// return (player1Tricks > player1Tricks) ? true : false;
-//	System.out.println("player"
-//		+ ((player1Tricks < player2Tricks) ? 1 : 2)
-//		+ " wins, "
-//		+ ((player1Tricks < player2Tricks) ? player1Tricks
-//			: player2Tricks)
-//		+ " tricks to "
-//		+ ((player1Tricks > player2Tricks) ? player1Tricks
-//			: player2Tricks) + " tricks.");
+	// // return (player1Tricks > player1Tricks) ? true : false;
+	// System.out.println("player"
+	// + ((player1Tricks < player2Tricks) ? 1 : 2)
+	// + " wins, "
+	// + ((player1Tricks < player2Tricks) ? player1Tricks
+	// : player2Tricks)
+	// + " tricks to "
+	// + ((player1Tricks > player2Tricks) ? player1Tricks
+	// : player2Tricks) + " tricks.");
 	return ((player1Tricks > player2Tricks) ? true : false);
     }
 
     private boolean calculateWinner(Card p1Card, Card p2Card) {
-	return (p1Card.getValue().getCardValue() < p2Card.getValue()
-		.getCardValue());
+	return (p1Card.getValue().getCardValue() < p2Card.getValue().getCardValue());
     }
 }

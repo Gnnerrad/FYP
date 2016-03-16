@@ -28,13 +28,9 @@ public class BasicModeLayout {
 	Card card1, card2;
 	while (player1.handSize() > 0 && player2.handSize() > 0) {
 	    if (player1turn) {
-		card1 = player1.playCard(
-			lmg.legalMoves(player1.getHand(), nullCard, false, 0),
-			nullCard);
+		card1 = player1.playCard(lmg.legalMoves(player1.getHand(), nullCard, false, 0), nullCard);
 		// System.out.println("Player1 plays "+card1.toString());
-		card2 = player2.playCard(
-			lmg.legalMoves(player2.getHand(), card1, false, 0),
-			card1);
+		card2 = player2.playCard(lmg.legalMoves(player2.getHand(), card1, false, 0), card1);
 
 		// System.out.println("Player2 plays "+card2.toString());
 		if (isbiggerNoSuit(card1, card2)) {
@@ -46,13 +42,9 @@ public class BasicModeLayout {
 		    player1turn = false;
 		}
 	    } else {
-		card1 = player2.playCard(
-			lmg.legalMoves(player2.getHand(), nullCard, false, 0),
-			nullCard);
+		card1 = player2.playCard(lmg.legalMoves(player2.getHand(), nullCard, false, 0), nullCard);
 		// System.out.println("Player2 plays "+card1.toString());
-		card2 = player1.playCard(
-			lmg.legalMoves(player1.getHand(), card1, false, 0),
-			card1);
+		card2 = player1.playCard(lmg.legalMoves(player1.getHand(), card1, false, 0), card1);
 		// System.out.println("Player1 plays "+card2.toString());
 		if (isbiggerNoSuit(card1, card2)) {
 		    // System.out.println("Player2 wins.\n");
@@ -64,14 +56,14 @@ public class BasicModeLayout {
 		}
 	    }
 	}
-//	System.out.println("player"
-//		+ ((player1Tricks > player2Tricks) ? 1 : 2)
-//		+ " wins, "
-//		+ ((player1Tricks > player2Tricks) ? player1Tricks
-//			: player2Tricks)
-//		+ " tricks to "
-//		+ ((player1Tricks < player2Tricks) ? player1Tricks
-//			: player2Tricks) + " tricks.");
+	// System.out.println("player"
+	// + ((player1Tricks > player2Tricks) ? 1 : 2)
+	// + " wins, "
+	// + ((player1Tricks > player2Tricks) ? player1Tricks
+	// : player2Tricks)
+	// + " tricks to "
+	// + ((player1Tricks < player2Tricks) ? player1Tricks
+	// : player2Tricks) + " tricks.");
 	return ((player1Tricks > player2Tricks) ? true : false);
     }
 
@@ -102,12 +94,9 @@ public class BasicModeLayout {
     }
 
     private boolean isbiggerNoSuit(Card card1, Card card2) {
-	if (card1.getSuit() == card2.getSuit()
-		&& card1.getValue().getCardValue() > card2.getValue()
-			.getCardValue()) {
+	if (card1.getSuit() == card2.getSuit() && card1.getValue().getCardValue() > card2.getValue().getCardValue()) {
 	    return true; // player1 wins by trump
-	} else if (card1.getSuit() == card2.getSuit()
- && card1.getValue().getCardValue() < card2.getValue().getCardValue()) {
+	} else if (card1.getSuit() == card2.getSuit() && card1.getValue().getCardValue() < card2.getValue().getCardValue()) {
 	    return false; // player2 wins by trump
 	} else {
 	    return true;

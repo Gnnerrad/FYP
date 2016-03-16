@@ -2,10 +2,10 @@ package objects;
 
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.Iterator;
+import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
-import nnTest.NN;
+import dataStructures.IOTuple;
 
 public class RandomPlayer extends Player {
     private ArrayList<Card> hand;
@@ -40,6 +40,12 @@ public class RandomPlayer extends Player {
     public void addCardSeen(Card c) {
 	neuralNetwork.addCardSeen(c);
     }
+    
+    public boolean chooseWhoGoesFirst() {
+	boolean b = new Random().nextBoolean();
+	neuralNetwork.setTurn(b);
+	return b;
+    }
 
     public Card playCard(ArrayList<Card> legalMoves, Card otherPlayersCard) {
 	if (otherPlayersCard != null)
@@ -48,7 +54,7 @@ public class RandomPlayer extends Player {
 	hand.remove(bestCard);
 	neuralNetwork.setCardsToPlay(bestCard);
 	neuralNetwork.removeCardIHave(bestCard);
-	neuralNetworkData.add(new IOTuple(playerNumber, neuralNetwork.getInput(), neuralNetwork.computeCurrentInputs()));
+	neuralNetworkData.add(new IOTuple(neuralNetwork.getInput(), neuralNetwork.computeCurrentInputs()));
 	neuralNetwork.clearCardInPlay();
 	return bestCard;
     }
@@ -68,7 +74,7 @@ public class RandomPlayer extends Player {
 		addCardSeen(c);
 	    }
 	}
-	neuralNetworkData.add(new IOTuple(playerNumber, neuralNetwork.getInput(), neuralNetwork.computeCurrentInputs()));
+	neuralNetworkData.add(new IOTuple(neuralNetwork.getInput(), neuralNetwork.computeCurrentInputs()));
 	hand = bestHand;
 	return bestHand;
     }
@@ -81,11 +87,11 @@ public class RandomPlayer extends Player {
 	    int i = ThreadLocalRandom.current().nextInt(0, 1 + 1);
 	    if (i == 0) {
 		addCardSeen(c);
-		neuralNetworkData.add(new IOTuple(playerNumber, neuralNetwork.getInput(), neuralNetwork.computeCurrentInputs()));
+		neuralNetworkData.add(new IOTuple(neuralNetwork.getInput(), neuralNetwork.computeCurrentInputs()));
 		return false;
 	    } else {
 		addCardToHand(c);
-		neuralNetworkData.add(new IOTuple(playerNumber, neuralNetwork.getInput(), neuralNetwork.computeCurrentInputs()));
+		neuralNetworkData.add(new IOTuple(neuralNetwork.getInput(), neuralNetwork.computeCurrentInputs()));
 		return true;
 	    }
 	}
@@ -128,7 +134,7 @@ public class RandomPlayer extends Player {
 	    }
 	}
 	neuralNetwork.setGameMode(bestGameMode);
-	neuralNetworkData.add(new IOTuple(playerNumber, neuralNetwork.getInput(), neuralNetwork.computeCurrentInputs()));
+	neuralNetworkData.add(new IOTuple(neuralNetwork.getInput(), neuralNetwork.computeCurrentInputs()));
 	return bestGameMode;
     }
 }
