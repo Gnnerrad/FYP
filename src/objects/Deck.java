@@ -1,8 +1,17 @@
 package objects;
 
-import java.util.*;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
 
-import objects.Card.*;
+import NN.NNSettings;
+import dataStructures.IOTuple;
+import objects.Card.CardValue;
+import objects.Card.Suit;
 
 public class Deck {
 
@@ -33,6 +42,22 @@ public class Deck {
 
     public Card dealCard() {
 	return deck.remove(0);
+    }
+
+    public void write(String file, boolean newGame) {
+	try (BufferedWriter out = new BufferedWriter(new FileWriter(file, true))) {
+	    if (newGame)
+		out.write(Boolean.toString(newGame));
+		out.write("\n");
+	    Iterator<Card> deckIT = deck.iterator();
+	    while (deckIT.hasNext()) {
+		Card card = deckIT.next();
+		out.write(card.getValue().getCardValue() + " " + card.getSuit().getCardSuit() + ",");
+	    }
+	    out.write("\n");
+	    out.close();
+	} catch (IOException e) {
+	}
     }
 
     public void printDeck() {

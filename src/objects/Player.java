@@ -13,6 +13,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.concurrent.ThreadLocalRandom;
 
+import NN.NN;
+import NN.NNSettings;
 import dataStructures.IOTuple;
 
 public class Player {

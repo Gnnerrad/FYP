@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
+import NN.NN;
 import dataStructures.IOTuple;
 
 public class RandomPlayer extends Player {

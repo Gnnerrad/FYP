@@ -61,42 +61,45 @@ package td;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-import objects.NNSettings;
-
 import org.neuroph.core.NeuralNetwork;
 import org.neuroph.core.data.DataSet;
 import org.neuroph.nnet.learning.BackPropagation;
 import org.neuroph.nnet.learning.DynamicBackPropagation;
 
+import NN.NNSettings;
 import dataStructures.IOTuple;
 
 public class temporalDifference {
-	private NeuralNetwork<BackPropagation> network = NeuralNetwork.load(NNSettings.nn);
-	private BackPropagation backprop = new BackPropagation();
-	// private Writer writer = new Writer();
-	private DataSet learningData;
+    private NeuralNetwork<BackPropagation> network = NeuralNetwork.load(NNSettings.nn);
+    private BackPropagation backprop = new BackPropagation();
+    // private Writer writer = new Writer();
+    private DataSet learningData = new DataSet(NNSettings.inputSize, NNSettings.outputSize);
 
-	public temporalDifference() {
-		backprop.setNeuralNetwork(network);
-	}
+    public temporalDifference() {
+	backprop.setNeuralNetwork(network);
+    }
 
-	public void learn(ArrayList<IOTuple> data) {
-		learningData = new DataSet(NNSettings.inputSize, NNSettings.outputSize);
-		int lambdaPower = 0;
-		// Last move Case
-		learningData.addRow(data.get(data.size() - 2).getInput(), data.get(data.size() - 1).getOutput());
-		backprop.setLearningRate(NNSettings.learningRate * Math.pow(NNSettings.lambda, lambdaPower));
-		backprop.learn(learningData, 1);
-		// All other Cases
-		for (int count = data.size() - 2; count > 0; count--) {
-			learningData.clear();
-			learningData.addRow(data.get(count - 1).getInput(), data.get(count).getOutput());
-			backprop.setLearningRate(NNSettings.learningRate * Math.pow(NNSettings.lambda, lambdaPower));
-			backprop.learn(learningData, 1);
-		}
+    public void learn(ArrayList<IOTuple> data) {
+	learningData.clear();
+	int lambdaPower = 0;
+	// Last move Case
+	learningData.addRow(data.get(data.size() - 2).getInput(), data.get(data.size() - 1).getOutput());
+	backprop.setLearningRate(NNSettings.learningRate * Math.pow(NNSettings.lambda, lambdaPower));
+	backprop.learn(learningData, 1);
+	// All other Cases
+	for (int count = data.size() - 2; count > 0; count--) {
+	    learningData.clear();
+	    learningData.addRow(data.get(count - 1).getInput(), data.get(count).getOutput());
+	    backprop.setLearningRate(NNSettings.learningRate * Math.pow(NNSettings.lambda, lambdaPower));
+	    backprop.learn(learningData, 1);
 	}
-	
-	public void save(){
-		network.save(NNSettings.nn);
-	}
+    }
+
+    public void save() {
+	network.save(NNSettings.nn);
+    }
+    
+    public void save(String d){
+	network.save(d);
+    }
 }
