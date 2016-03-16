@@ -21,10 +21,10 @@ public class Player {
     public ArrayList<IOTuple> neuralNetworkData;
     protected int playerNumber;
 
-    public Player(int playerNumber, ArrayList<IOTuple> neuralNetworkData) {
+    public Player(int playerNumber, String nn, ArrayList<IOTuple> neuralNetworkData) {
 	hand = new ArrayList<>();
 	this.playerNumber = playerNumber;
-	neuralNetwork = new NN(playerNumber);
+	neuralNetwork = new NN(nn);
 	this.neuralNetworkData = neuralNetworkData;
     }
 

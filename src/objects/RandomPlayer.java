@@ -9,13 +9,14 @@ import dataStructures.IOTuple;
 
 public class RandomPlayer extends Player {
     private ArrayList<Card> hand;
-    private NN neuralNetwork = new NN(0);
+    private NN neuralNetwork;
     private ArrayList<IOTuple> neuralNetworkData;
     protected int playerNumber;
 
-    public RandomPlayer(int playerNumber, ArrayList<IOTuple> neuralNetworkData) {
-	super(playerNumber, neuralNetworkData);
+    public RandomPlayer(int playerNumber, String nn, ArrayList<IOTuple> neuralNetworkData) {
+	super(playerNumber, nn, neuralNetworkData);
 	hand = new ArrayList<>();
+	neuralNetwork = new NN(nn);
 	this.playerNumber = playerNumber;
 	this.neuralNetworkData = neuralNetworkData;
     }
