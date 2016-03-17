@@ -7,6 +7,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import NN.NNSettings;
 
@@ -115,6 +116,8 @@ public class GameData {
 	    String line;
 	    String[] splitline;
 	    double[] output = new double[NNSettings.outputSize], input = new double[NNSettings.inputSize];
+	    Arrays.fill(output, -1);
+	    Arrays.fill(input, -1);
 	    ArrayList<IOTuple> game = new ArrayList<IOTuple>();
 	    while ((line = in.readLine()) != null) {
 		if (line.equals("")) {
@@ -126,24 +129,25 @@ public class GameData {
 		    game.clear();
 		} else {
 		    splitline = line.split(",");
-		    if (line.length() < 100) {
-			for (int i = 0; i < splitline.length; i++) {
-			    output[i] = Double.valueOf(splitline[i]);
-			}
-		    } else {
+		    if (splitline.length > 5) {
 			for (int i = 0; i < splitline.length; i++) {
 			    input[i] = Double.valueOf(splitline[i]);
 			}
+		    } else {
+			for (int i = 0; i < splitline.length; i++) {
+			    output[i] = Double.valueOf(splitline[i]);
+			}
 		    }
 		}
-		if (output != null && input != null) {
+		if (output[0] != -1 && input[0] != -1) {
 		    game.add(new IOTuple(input, output));
-		    input = new double[NNSettings.outputSize];
-		    input = new double[NNSettings.inputSize];
+		    Arrays.fill(output, -1);
+		    Arrays.fill(input, -1);
 		}
 	    }
 
 	} catch (IOException e) {
+	    System.out.println("Could not read the file: " + filePath);
 	}
     }
 }

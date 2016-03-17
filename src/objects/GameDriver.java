@@ -44,7 +44,15 @@ public class GameDriver {
     }
 
     private void driver() {
-	lean(500);
+	// lean(500);
+	test100();
+    }
+
+    private void test100() {
+	for (int nn = 0; nn <= 1000; nn += 50) {
+	    testGame("lib/Whist(216i - 60h - 5o) Epoch " + nn + ".nnet");
+	}
+	// testGame("lib/Whist(216i - 60h - 5o) Epoch 0.nnet");
     }
 
     // private void createFile(){
@@ -68,7 +76,7 @@ public class GameDriver {
 	    }
 	    if (epoch % 50 == 0) {
 		td.save();
-		td.save("lib/Whist(216i - 60h - 5o) Epoch " + (epoch+500) + ".nnet");
+		td.save("lib/Whist(216i - 60h - 5o) Epoch " + (epoch + 500) + ".nnet");
 	    }
 	    t2 = System.currentTimeMillis();
 	    average += (t2 - t1);
@@ -79,6 +87,43 @@ public class GameDriver {
     private void learnGame(GameData gm, int gameIndex) {
 	td.learn(gm.getPlayer1Game(gameIndex));
 	td.learn(gm.getPlayer2Game(gameIndex));
+    }
+
+    private void testGame(String NN) {
+	GameData gd = new GameData();
+	NeuralNetwork network = NeuralNetwork.load(NN);
+	gd.readFile("data/(Game) Player1 Test 100.txt", 1);
+	gd.readFile("data/(Game) Player2 Test 100.txt", 2);
+	double[] tempOut, outcome1, outcome2;
+	double rmse = 0;
+	for (int i = 0; i < gd.size(); i++) {
+	    ArrayList<IOTuple> game1 = gd.getPlayer1Game(i);
+	    outcome1 = game1.get(game1.size() - 1).getOutput();
+	    ArrayList<IOTuple> game2 = gd.getPlayer2Game(i);
+	    outcome2 = game2.get(game2.size() - 1).getOutput();
+
+	    IOTuple tuple1 = game1.get(24);
+	    IOTuple tuple2 = game2.get(24);
+	    network.setInput(tuple1.getInput());
+	    network.calculate();
+	    tempOut = network.getOutput();
+	    for (int j = 0; j < tempOut.length; j++) {
+		rmse += Math.pow(tempOut[j] - outcome1[j], 2);
+	    }
+	    network.setInput(tuple2.getInput());
+	    network.calculate();
+	    tempOut = network.getOutput();
+	    for (int j = 0; j < tempOut.length; j++) {
+		rmse += Math.pow(tempOut[j] - outcome2[j], 2);
+	    }
+	    // for (int j = 0; j < game1.size()-1; j++) {
+	    // IOTuple tuple1 = game1.get(j);
+	    // network.setInput(tuple1.getInput());
+	    // network.calculate();
+	    // tempOut = network.getOutput();
+	    // }
+	}
+	System.out.println(Math.sqrt(rmse / gd.size()));
     }
 
     private void playGame(boolean selfPlay, String player1NN, String player2NN, String DeckFile, GameData gm) {
