@@ -86,10 +86,10 @@ public class BasicModeLayout {
 
     private void acceptOrNext(Player player) {
 	Card card1 = deck.dealCard(), card2 = deck.dealCard();
-	if (player.acceptCardChoice(card1, false)) {
+	if (player.acceptOrNext(card1, false)) {
 	    player.addCardSeen(card2);
 	} else {
-	    player.acceptCardChoice(card2, true);
+	    player.acceptOrNext(card2, true);
 	}
     }
 

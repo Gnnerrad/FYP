@@ -9,6 +9,8 @@ import gameModes.ChoiceGameMode;
 import gameModes.MisereGameMode;
 import gameModes.TrumpGameMode;
 
+import java.io.BufferedWriter;
+import java.io.FileWriter;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -45,42 +47,87 @@ public class GameDriver {
 
     private void driver() {
 	// lean(500);
-	test100();
+	// test100();
+	// createFile(true);
+	// player1WinsB = 0;
+	// player1WinsS = 0;
+	// player2WinsS = 0;
+	// player2WinsB = 0;
+	// drawCount = 0;
+	// createFile(false);
+	// double start = System.currentTimeMillis(), t1, t2, average = 0;
+	// GameData gd = new GameData();
+	// for (int i = 0; i < 1000; i++) {
+	// t1 = System.currentTimeMillis();
+	// playGame(true, NNSettings.nn, NNSettings.nn, null, gd);
+	// learnGame(gd, 0);
+	// gd.clear();
+	// t2 = System.currentTimeMillis();
+	// average += (t2 - t1);
+	// System.out.println(i + "\t" + (t2 - t1) + "\t:\t" + (average / (i +
+	// 1)) + "/" + (t2 - start));
+	// td.save();
+	// }
+	// learn(9000);
+	// test100();
+	// System.out.println();
+	// testGame(NNSettings.nn);
+
+	// testGame("lib/NNEpoch.nnet", 100);
+	// testGame("lib/NNself.nnet", 100);
+	testGame("lib/Whist(216i - 60h - 5o).nnet", 100);
+	// pvp("lib/NN.nnet", "lib/NNself.nnet", 100);
     }
 
-    private void test100() {
-	for (int nn = 0; nn <= 1000; nn += 50) {
-	    testGame("lib/Whist(216i - 60h - 5o) Epoch " + nn + ".nnet");
-	}
-	// testGame("lib/Whist(216i - 60h - 5o) Epoch 0.nnet");
-    }
-
-    // private void createFile(){
-    // // GameData randomPlayGames = new GameData();
-    // // double t1 = System.currentTimeMillis(), t2;
-    // // for (int i = 0; i < 100; i++) {
-    // // playGame(false, NNSettings.nn, NNSettings.nn, null, randomPlayGames);
+    // private void test100() {
+    // for (int nn = 0; nn <= 1000; nn += 50) {
+    // testGame("lib/Whist(216i - 60h - 5o) Epoch " + nn + ".nnet");
+    // }
+    // // // testGame("lib/Whist(216i - 60h - 5o) Epoch 0.nnet");
+    // // for(int i = 0; i<100;i++){
+    // // playGame(true, "lib/Whist(216i - 60h - 5o) Epoch 1000.nnet",
+    // // "lib/Whist(216i - 60h - 5o) Epoch 0.nnet", null, new GameData());
     // // }
-    // // randomPlayGames.writeFile();
     // }
 
-    private void lean(int epochs) {
+    private void pvp(String NN1, String NN2, int games) {
+	GameData gd = new GameData();
+	for (int i = 0; i < games; i++)
+	    playGame(true, NN1, NN2, null, gd);
+    }
+
+    private void createFile(boolean trainFile) {
+	GameData randomPlayGames = new GameData();
+	if (trainFile) {
+	    for (int i = 0; i < 100; i++) {
+		playGame(true, NNSettings.nn, NNSettings.nn, null, randomPlayGames);
+	    }
+	    randomPlayGames.writeFile(NNSettings.player1GameFile, NNSettings.player2GameFile);
+	} else {
+	    for (int i = 0; i < 100; i++) {
+		playGame(true, NNSettings.nn, NNSettings.nn, "data\100 deck", randomPlayGames);
+	    }
+	    randomPlayGames.writeFile(NNSettings.player1TestFile, NNSettings.player2TestFile);
+	}
+    }
+
+    private void learn(int epochs) {
 	double start = System.currentTimeMillis(), t1, t2, average = 0;
 	GameData gd = new GameData();
 	gd.readFile(NNSettings.player1GameFile, 1);
 	gd.readFile(NNSettings.player2GameFile, 2);
-	for (int epoch = 1; epoch <= epochs; epoch++) {
+	for (int epoch = 0; epoch <= epochs; epoch++) {
 	    t1 = System.currentTimeMillis();
 	    for (int i = 0; i < gd.size(); i++) {
 		learnGame(gd, i);
 	    }
 	    if (epoch % 50 == 0) {
 		td.save();
-		td.save("lib/Whist(216i - 60h - 5o) Epoch " + (epoch + 500) + ".nnet");
+		td.save("lib/Whist(216i - 60h - 5o) Epoch " + (epoch + 1000) + ".nnet");
 	    }
 	    t2 = System.currentTimeMillis();
 	    average += (t2 - t1);
-	    System.out.println((t2 - t1) + "\t:\t" + (average / (epoch)) + "/" + (t2 - start));
+	    System.out.println(epoch + "\t" + (t2 - t1) + "\t:\t" + (average / (epoch + 1)) + "/" + (t2 - start));
 	}
     }
 
@@ -89,41 +136,85 @@ public class GameDriver {
 	td.learn(gm.getPlayer2Game(gameIndex));
     }
 
-    private void testGame(String NN) {
+    private void testGame(String NN, int games) {
 	GameData gd = new GameData();
-	NeuralNetwork network = NeuralNetwork.load(NN);
-	gd.readFile("data/(Game) Player1 Test 100.txt", 1);
-	gd.readFile("data/(Game) Player2 Test 100.txt", 2);
+	for (int i = 0; i < games; i++)
+	    playGame(true, NN, NN, null, gd);
+
 	double[] tempOut, outcome1, outcome2;
-	double rmse = 0;
+	double gameModeRmse = 0, discard6Rmse = 0, acceptOrNextRmse = 0, playCardRmse = 0, temp = 0;
+	int gameModeCount = 0, discard6Count = 0, acceptOrNextCount = 0, playCardCount = 0;
 	for (int i = 0; i < gd.size(); i++) {
 	    ArrayList<IOTuple> game1 = gd.getPlayer1Game(i);
 	    outcome1 = game1.get(game1.size() - 1).getOutput();
 	    ArrayList<IOTuple> game2 = gd.getPlayer2Game(i);
 	    outcome2 = game2.get(game2.size() - 1).getOutput();
-
-	    IOTuple tuple1 = game1.get(24);
-	    IOTuple tuple2 = game2.get(24);
-	    network.setInput(tuple1.getInput());
-	    network.calculate();
-	    tempOut = network.getOutput();
-	    for (int j = 0; j < tempOut.length; j++) {
-		rmse += Math.pow(tempOut[j] - outcome1[j], 2);
+	    for (IOTuple t : game1) {
+		switch (t.getType()) {
+		case 0:
+		    for (int j = 0; j < outcome1.length; j++) {
+			gameModeRmse += Math.pow(outcome1[j] - t.getOutput()[j], 2);
+			gameModeCount++;
+		    }
+		    break;
+		case 1:
+		    for (int j = 0; j < outcome1.length; j++) {
+			discard6Rmse += Math.pow(outcome1[j] - t.getOutput()[j], 2);
+			discard6Count++;
+		    }
+		    break;
+		case 2:
+		    for (int j = 0; j < outcome1.length; j++) {
+			acceptOrNextRmse += Math.pow(outcome1[j] - t.getOutput()[j], 2);
+			acceptOrNextCount++;
+		    }
+		    break;
+		case 4:
+		    for (int j = 0; j < outcome1.length; j++) {
+			playCardRmse += Math.pow(outcome1[j] - t.getOutput()[j], 2);
+			playCardCount++;
+		    }
+		    break;
+		default:
+		    break;
+		}
 	    }
-	    network.setInput(tuple2.getInput());
-	    network.calculate();
-	    tempOut = network.getOutput();
-	    for (int j = 0; j < tempOut.length; j++) {
-		rmse += Math.pow(tempOut[j] - outcome2[j], 2);
+	    for (IOTuple t : game2) {
+		switch (t.getType()) {
+		case 0:
+		    for (int j = 0; j < outcome2.length; j++) {
+			gameModeRmse += Math.pow(outcome2[j] - t.getOutput()[j], 2);
+			gameModeCount++;
+		    }
+		    break;
+		case 1:
+		    for (int j = 0; j < outcome2.length; j++) {
+			discard6Rmse += Math.pow(outcome2[j] - t.getOutput()[j], 2);
+			discard6Count++;
+		    }
+		    break;
+		case 2:
+		    for (int j = 0; j < outcome2.length; j++) {
+			acceptOrNextRmse += Math.pow(outcome2[j] - t.getOutput()[j], 2);
+			acceptOrNextCount++;
+		    }
+		    break;
+		case 4:
+		    for (int j = 0; j < outcome2.length; j++) {
+			playCardRmse += Math.pow(outcome2[j] - t.getOutput()[j], 2);
+			playCardCount++;
+		    }
+		    break;
+		default:
+		    break;
+		}
 	    }
-	    // for (int j = 0; j < game1.size()-1; j++) {
-	    // IOTuple tuple1 = game1.get(j);
-	    // network.setInput(tuple1.getInput());
-	    // network.calculate();
-	    // tempOut = network.getOutput();
-	    // }
 	}
-	System.out.println(Math.sqrt(rmse / gd.size()));
+	try (BufferedWriter out = new BufferedWriter(new FileWriter("data/rmses", true))) {
+	    out.write(Math.sqrt(gameModeRmse / gameModeCount) + "\t" + Math.sqrt(discard6Rmse / discard6Count) + "\t" + Math.sqrt(acceptOrNextRmse / acceptOrNextCount) + "\t" + Math.sqrt(playCardRmse / playCardCount) + "\n");
+	} catch (Exception e) {
+
+	}
     }
 
     private void playGame(boolean selfPlay, String player1NN, String player2NN, String DeckFile, GameData gm) {
@@ -160,28 +251,28 @@ public class GameDriver {
 	    // 13-0 12-1 11-2 10-3 9-4 8-5 7-6
 	    if (player1Rounds > 9) {
 		player1WinsB++;
-		neuralNetworkData1.add(new IOTuple(null, new double[] { 1, 0, 0, 0, 0 }));
-		neuralNetworkData2.add(new IOTuple(null, new double[] { 0, 0, 0, 0, 1 }));
+		neuralNetworkData1.add(new IOTuple(5, neuralNetworkData1.size(), null, new double[] { 1, 0, 0, 0, 0 }));
+		neuralNetworkData2.add(new IOTuple(5, neuralNetworkData2.size(), null, new double[] { 0, 0, 0, 0, 1 }));
 	    } else {
 		player1WinsS++;
-		neuralNetworkData1.add(new IOTuple(null, new double[] { 0, 1, 0, 0, 0 }));
-		neuralNetworkData2.add(new IOTuple(null, new double[] { 0, 0, 0, 1, 0 }));
+		neuralNetworkData1.add(new IOTuple(5, neuralNetworkData1.size(), null, new double[] { 0, 1, 0, 0, 0 }));
+		neuralNetworkData2.add(new IOTuple(5, neuralNetworkData2.size(), null, new double[] { 0, 0, 0, 1, 0 }));
 	    }
 
 	} else if (player1Rounds < player2Rounds) {
 	    if (player2Rounds > 9) {
 		player2WinsB++;
-		neuralNetworkData2.add(new IOTuple(null, new double[] { 1, 0, 0, 0, 0 }));
-		neuralNetworkData1.add(new IOTuple(null, new double[] { 0, 0, 0, 0, 1 }));
+		neuralNetworkData2.add(new IOTuple(5, neuralNetworkData2.size(), null, new double[] { 1, 0, 0, 0, 0 }));
+		neuralNetworkData1.add(new IOTuple(5, neuralNetworkData1.size(), null, new double[] { 0, 0, 0, 0, 1 }));
 	    } else {
 		player2WinsS++;
-		neuralNetworkData2.add(new IOTuple(null, new double[] { 0, 1, 0, 0, 0 }));
-		neuralNetworkData1.add(new IOTuple(null, new double[] { 0, 0, 0, 1, 0 }));
+		neuralNetworkData2.add(new IOTuple(5, neuralNetworkData2.size(), null, new double[] { 0, 1, 0, 0, 0 }));
+		neuralNetworkData1.add(new IOTuple(5, neuralNetworkData1.size(), null, new double[] { 0, 0, 0, 1, 0 }));
 	    }
 	} else {
 	    drawCount++;
-	    neuralNetworkData1.add(new IOTuple(null, new double[] { 0, 0, 1, 0, 0 }));
-	    neuralNetworkData2.add(new IOTuple(null, new double[] { 0, 0, 1, 0, 0 }));
+	    neuralNetworkData1.add(new IOTuple(5, neuralNetworkData1.size(), null, new double[] { 0, 0, 1, 0, 0 }));
+	    neuralNetworkData2.add(new IOTuple(5, neuralNetworkData2.size(), null, new double[] { 0, 0, 1, 0, 0 }));
 	}
 	System.out.println(player1WinsB + "-" + player1WinsS + ":" + drawCount + ":" + player2WinsS + "-" + player2WinsB);
 	gm.addGame(neuralNetworkData1, neuralNetworkData2);

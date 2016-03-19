@@ -6,6 +6,7 @@ import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
 import NN.NN;
+import NN.NNSettings;
 import dataStructures.IOTuple;
 
 public class RandomPlayer extends Player {
@@ -42,10 +43,12 @@ public class RandomPlayer extends Player {
     public void addCardSeen(Card c) {
 	neuralNetwork.addCardSeen(c);
     }
-    
+
     public boolean chooseWhoGoesFirst() {
+//	NNSettings.testCount++;
 	boolean b = new Random().nextBoolean();
 	neuralNetwork.setTurn(b);
+	neuralNetworkData.add(new IOTuple(3, neuralNetworkData.size(), neuralNetwork.getInput(), neuralNetwork.computeCurrentInputs()));
 	return b;
     }
 
@@ -56,7 +59,7 @@ public class RandomPlayer extends Player {
 	hand.remove(bestCard);
 	neuralNetwork.setCardsToPlay(bestCard);
 	neuralNetwork.removeCardIHave(bestCard);
-	neuralNetworkData.add(new IOTuple(neuralNetwork.getInput(), neuralNetwork.computeCurrentInputs()));
+	neuralNetworkData.add(new IOTuple(4, neuralNetworkData.size(), neuralNetwork.getInput(), neuralNetwork.computeCurrentInputs()));
 	neuralNetwork.clearCardInPlay();
 	return bestCard;
     }
@@ -76,12 +79,12 @@ public class RandomPlayer extends Player {
 		addCardSeen(c);
 	    }
 	}
-	neuralNetworkData.add(new IOTuple(neuralNetwork.getInput(), neuralNetwork.computeCurrentInputs()));
+	neuralNetworkData.add(new IOTuple(1, neuralNetworkData.size(), neuralNetwork.getInput(), neuralNetwork.computeCurrentInputs()));
 	hand = bestHand;
 	return bestHand;
     }
 
-    public boolean acceptCardChoice(Card c, boolean forcedToTake) {
+    public boolean acceptOrNext(Card c, boolean forcedToTake) {
 	if (forcedToTake) {
 	    addCardToHand(c);
 	    return true;
@@ -89,20 +92,20 @@ public class RandomPlayer extends Player {
 	    int i = ThreadLocalRandom.current().nextInt(0, 1 + 1);
 	    if (i == 0) {
 		addCardSeen(c);
-		neuralNetworkData.add(new IOTuple(neuralNetwork.getInput(), neuralNetwork.computeCurrentInputs()));
+		neuralNetworkData.add(new IOTuple(2, neuralNetworkData.size(), neuralNetwork.getInput(), neuralNetwork.computeCurrentInputs()));
 		return false;
 	    } else {
 		addCardToHand(c);
-		neuralNetworkData.add(new IOTuple(neuralNetwork.getInput(), neuralNetwork.computeCurrentInputs()));
+		neuralNetworkData.add(new IOTuple(2, neuralNetworkData.size(), neuralNetwork.getInput(), neuralNetwork.computeCurrentInputs()));
 		return true;
 	    }
 	}
     }
 
     public int chooseGamemode(ArrayList<Integer> gameModesAvailable) {
-	int bestGameMode = -1;
-	int i = ThreadLocalRandom.current().nextInt(0, 8 + 1);
-	switch (i) {
+	int bestGameMode = -1,gm, i = ThreadLocalRandom.current().nextInt(0, gameModesAvailable.size());
+	gm = gameModesAvailable.get(i);
+	switch (gm) {
 	case 0:
 	    bestGameMode = 0;
 	    break;
@@ -136,7 +139,7 @@ public class RandomPlayer extends Player {
 	    }
 	}
 	neuralNetwork.setGameMode(bestGameMode);
-	neuralNetworkData.add(new IOTuple(neuralNetwork.getInput(), neuralNetwork.computeCurrentInputs()));
+	neuralNetworkData.add(new IOTuple(0, neuralNetworkData.size(), neuralNetwork.getInput(), neuralNetwork.computeCurrentInputs()));
 	return bestGameMode;
     }
 }

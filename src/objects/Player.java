@@ -50,23 +50,27 @@ public class Player {
     public void addCardSeen(Card c) {
 	neuralNetwork.addCardSeen(c);
     }
-    
-    public void setTurn(boolean b){
+
+    public void setTurn(boolean b) {
 	neuralNetwork.setTurn(b);
     }
 
     public boolean chooseWhoGoesFirst() {
 	neuralNetwork.setTurn(true);
-	double[] output = neuralNetwork.computeCurrentInputs();
-	double trueResult = calculateResult(output);
+	double[] meOutput = neuralNetwork.computeCurrentInputs();
+	double[] meInput = neuralNetwork.getInput();
+	double trueResult = calculateResult(meOutput);
 	neuralNetwork.setTurn(false);
-	output = neuralNetwork.computeCurrentInputs();
-	double falseResult = calculateResult(output);
-	if (trueResult > falseResult)
+	double[] youOutput = neuralNetwork.computeCurrentInputs();
+	double[] youInput = neuralNetwork.getInput();
+	double falseResult = calculateResult(youOutput);
+	if (trueResult >= falseResult) {
+	    neuralNetworkData.add(new IOTuple(3, neuralNetworkData.size(), meInput, meOutput));
 	    return true;
-	else
+	} else {
+	    neuralNetworkData.add(new IOTuple(3, neuralNetworkData.size(), youInput, youOutput));
 	    return false;
-
+	}
     }
 
     public Card playCard(ArrayList<Card> legalMoves, Card otherPlayersCard) {
@@ -91,7 +95,7 @@ public class Player {
 	    neuralNetwork.addCardIHave(handCard);
 	}
 	hand.remove(bestCard);
-	neuralNetworkData.add(new IOTuple(bestInput, bestOutput));
+	neuralNetworkData.add(new IOTuple(4, neuralNetworkData.size(), bestInput, bestOutput));
 	return bestCard;
     }
 
@@ -149,11 +153,11 @@ public class Player {
 	for (Card c : this.hand)
 	    addCardSeen(c);
 	this.hand = bestHand;
-	neuralNetworkData.add(new IOTuple(bestInput, bestOutput));
+	neuralNetworkData.add(new IOTuple(1, neuralNetworkData.size(), bestInput, bestOutput));
 	return bestHand;
     }
 
-    public boolean acceptCardChoice(Card c, boolean forcedToTake) {
+    public boolean acceptOrNext(Card c, boolean forcedToTake) {
 	// Should I store nn results for forced card takes.
 	if (forcedToTake) {
 	    addCardToHand(c);
@@ -174,11 +178,11 @@ public class Player {
 
 	    if (acceptResult > passResutlt) {
 		addCardToHand(c);
-		neuralNetworkData.add(new IOTuple(acceptInputs, acceptResults));
+		neuralNetworkData.add(new IOTuple(2, neuralNetworkData.size(), acceptInputs, acceptResults));
 		return true;
 	    } else {
 		addCardSeen(c);
-		neuralNetworkData.add(new IOTuple(passInputs, passResults));
+		neuralNetworkData.add(new IOTuple(2, neuralNetworkData.size(), passInputs, passResults));
 		return false;
 	    }
 	}
@@ -214,7 +218,7 @@ public class Player {
 	    }
 	}
 	neuralNetwork.setGameMode(bestGameMode);
-	neuralNetworkData.add(new IOTuple(bestInput, bestOutput));
+	neuralNetworkData.add(new IOTuple(0, neuralNetworkData.size(), bestInput, bestOutput));
 	return bestGameMode;
     }
 

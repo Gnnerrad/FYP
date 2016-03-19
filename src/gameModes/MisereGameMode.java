@@ -1,5 +1,6 @@
 package gameModes;
 
+import NN.NNSettings;
 import objects.Card;
 import objects.Deck;
 import objects.Player;
@@ -12,17 +13,17 @@ public class MisereGameMode extends BasicModeLayout {
 
     public boolean playMode() {
 	setUpHands();
+	if (player1turn) {
+	    player1turn = player1.chooseWhoGoesFirst();
+	    player1.setTurn(false);
+	    player2.setTurn(false);
+	} else {
+	    player1turn = player2.chooseWhoGoesFirst();
+	    player1.setTurn(false);
+	    player2.setTurn(false);
+	}
 	Card card1, card2;
 	while (player1.handSize() > 0 && player2.handSize() > 0) {
-	    if (player1turn) {
-		player1turn = player1.chooseWhoGoesFirst();
-		player1.setTurn(false);
-		player2.setTurn(false);
-	    } else {
-		player1turn = player2.chooseWhoGoesFirst();
-		player1.setTurn(false);
-		player2.setTurn(false);
-	    }
 	    if (player1turn) {
 		card1 = player1.playCard(lmg.legalMoves(player1.getHand(), nullCard, false, 0), nullCard);
 		card2 = player2.playCard(lmg.legalMoves(player2.getHand(), card1, false, 0), card1);
