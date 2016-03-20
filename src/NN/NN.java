@@ -21,7 +21,7 @@ public class NN {
 	private boolean myTurn = false;
 
 	public NN(String nn) {
-		network = NeuralNetwork.load(NNSettings.nn);
+		network = NeuralNetwork.load(nn);
 		Arrays.fill(CardsIHave, Boolean.FALSE);
 		Arrays.fill(CardsSeen, Boolean.FALSE);
 	}
