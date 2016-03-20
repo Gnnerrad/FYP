@@ -275,7 +275,7 @@ public class GameDriver {
 	if (player1Rounds > player2Rounds) {
 	    System.out.println(player1Rounds + ">" + player2Rounds);
 	    // 13-0 12-1 11-2 10-3 9-4 8-5 7-6
-	    if (player1Rounds > 9) {
+	    if (player1Rounds > 6) {
 		player1WinsB++;
 		neuralNetworkData1.add(new IOTuple(5, neuralNetworkData1.size(), null, new double[] { 1, 0, 0, 0, 0 }));
 		neuralNetworkData2.add(new IOTuple(5, neuralNetworkData2.size(), null, new double[] { 0, 0, 0, 0, 1 }));
@@ -286,7 +286,7 @@ public class GameDriver {
 	    }
 
 	} else if (player1Rounds < player2Rounds) {
-	    if (player2Rounds > 9) {
+	    if (player2Rounds > 6) {
 		player2WinsB++;
 		neuralNetworkData2.add(new IOTuple(5, neuralNetworkData2.size(), null, new double[] { 1, 0, 0, 0, 0 }));
 		neuralNetworkData1.add(new IOTuple(5, neuralNetworkData1.size(), null, new double[] { 0, 0, 0, 0, 1 }));
