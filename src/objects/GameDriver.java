@@ -55,9 +55,10 @@ public class GameDriver {
 	// player2WinsB = 0;
 	// drawCount = 0;
 	// createFile(false);
+
 	// double start = System.currentTimeMillis(), t1, t2, average = 0;
 	// GameData gd = new GameData();
-	// for (int i = 0; i < 1000; i++) {
+	// for (int i = 0; i <= 10000; i++) {6
 	// t1 = System.currentTimeMillis();
 	// playGame(true, NNSettings.nn, NNSettings.nn, null, gd);
 	// learnGame(gd, 0);
@@ -67,16 +68,40 @@ public class GameDriver {
 	// System.out.println(i + "\t" + (t2 - t1) + "\t:\t" + (average / (i +
 	// 1)) + "/" + (t2 - start));
 	// td.save();
+	// if (i % 1000 == 0) {
+	// td.save("lib/NNself " + i);
 	// }
+	// }
+
 	// learn(9000);
 	// test100();
 	// System.out.println();
 	// testGame(NNSettings.nn);
 
-	// testGame("lib/NNEpoch.nnet", 100);
-	// testGame("lib/NNself.nnet", 100);
-	testGame("lib/Whist(216i - 60h - 5o).nnet", 100);
-	// pvp("lib/NN.nnet", "lib/NNself.nnet", 100);
+	// testGame("lib/NN.nnet", 100);
+	// for (int i = 10000; i >= 0; i -= 1000) {
+	// testGame("lib/NNself " + i + ".nnet", 100);
+	// }
+	// testGame("lib/Whist(216i - 60h - 5o).nnet", 100);
+	// try (BufferedWriter out = new BufferedWriter(new
+	// FileWriter("data/RoundRobin", false))) {
+	// for (int i = 0; i <= 10000; i += 1000) {
+	// for (int j = i + 1000; j <= 10000; j += 1000) {
+	// pvp("lib/NNself " + i + ".nnet", "lib/NNself " + j + ".nnet", 100);
+	// out.write(i + ":" + j + "\t" + player1WinsB + "-" + player1WinsS +
+	// ":" + drawCount + ":" + player2WinsS + "-" + player2WinsB + "\n");
+	// player1WinsB = 0;
+	// player1WinsS = 0;
+	// player2WinsS = 0;
+	// player2WinsB = 0;
+	// drawCount = 0;
+	// }
+	// }
+	// out.close();
+	// } catch (Exception e) {
+	//
+	// }
+	pvp("lib/NNself 10000.nnet", "lib/NNself 0.nnet", 100);
     }
 
     // private void test100() {
@@ -248,6 +273,7 @@ public class GameDriver {
 	    player1GoesFirst = !player1GoesFirst;
 	}
 	if (player1Rounds > player2Rounds) {
+	    System.out.println(player1Rounds + ">" + player2Rounds);
 	    // 13-0 12-1 11-2 10-3 9-4 8-5 7-6
 	    if (player1Rounds > 9) {
 		player1WinsB++;
