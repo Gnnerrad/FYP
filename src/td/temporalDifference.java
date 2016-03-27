@@ -70,12 +70,13 @@ import NN.NNSettings;
 import dataStructures.IOTuple;
 
 public class temporalDifference {
-    private NeuralNetwork<BackPropagation> network = NeuralNetwork.load(NNSettings.nn);
+    private NeuralNetwork<BackPropagation> network;
     private BackPropagation backprop = new BackPropagation();
     // private Writer writer = new Writer();
     private DataSet learningData = new DataSet(NNSettings.inputSize, NNSettings.outputSize);
 
-    public temporalDifference() {
+    public temporalDifference(String nn) {
+	network = NeuralNetwork.load(nn);
 	backprop.setNeuralNetwork(network);
     }
 
