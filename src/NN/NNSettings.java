@@ -8,5 +8,5 @@ public class NNSettings {
 	    player2GameFile = "data/(Game) Player2 Train 100.txt",
 	    player1TestFile = "data/(Game) Player1 Test 100.txt",
 	    player2TestFile = "data/(Game) Player2 Test 100.txt";
-    public static double learningRate = 0.001, lambda = 0.5;
+    public static double learningRate = 0.0005, lambda = 0.5;
 }

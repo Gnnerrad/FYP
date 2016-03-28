@@ -49,24 +49,20 @@ public class GameDriver {
 
 	private void driver() {
 
-		for (int x = 0; x < 3; x++) {
+		for (int x = 0; x < 4; x++) {
 			switch (x) {
 			case 0:
-				NNSettings.nn = "lib/Self lambda 0.25.nnet";
-				NNSettings.lambda = 0.25;
+				NNSettings.nn = "Whist(216i - 40h - 5o).nnet";
 				break;
 			case 1:
-				NNSettings.nn = "lib/Self lambda 0.5.nnet";
-				NNSettings.lambda= 0.5;
+				NNSettings.nn = "Whist(216i - 60h - 5o).nnet";
 				break;
 			case 2:
-				NNSettings.nn = "lib/Self lambda 0.75.nnet";
-				NNSettings.lambda = 0.75;
+				NNSettings.nn = "Whist(216i - 80h - 5o).nnet";
 				break;
-//			case 3:
-//				NNSettings.nn = "lib/Self 0.000001.nnet";
-//				NNSettings.learningRate = 0.000001;
-//				break;
+			case 3:
+				NNSettings.nn = "Whist(216i - 100h - 5o).nnet";
+				break;
 //			case 4:
 //				NNSettings.nn = "lib/Self 0.0000001.nnet";
 //				NNSettings.learningRate = 0.0000001;
