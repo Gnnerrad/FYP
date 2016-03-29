@@ -3,7 +3,7 @@ __author__ = 'darre_000'
 'Self lr 0.001 rmse'
 
 #READ CSV
-lines = [line.rstrip('\n') for line in open('Self lr 0.00001 rmse')]
+lines = [line.rstrip('\n') for line in open('Epoch lr 0.00001 rmse')]
 sub = []
 avg = []
 av = 0
@@ -22,6 +22,6 @@ for x in sub:
 import matplotlib.pyplot as plt
 import numpy as n
 
-plt.title("Self lr 0.0001 rmse || average")
+# plt.title("Self lr 0.0001 rmse || average")
 plt.plot(avg)
 plt.show()
