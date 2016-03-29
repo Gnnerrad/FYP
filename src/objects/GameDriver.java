@@ -52,16 +52,16 @@ public class GameDriver {
 		for (int x = 0; x < 4; x++) {
 			switch (x) {
 			case 0:
-				NNSettings.nn = "Whist(216i - 40h - 5o).nnet";
+				NNSettings.nn = "lib/Whist(216i - 40h - 5o).nnet";
 				break;
 			case 1:
-				NNSettings.nn = "Whist(216i - 60h - 5o).nnet";
+				NNSettings.nn = "lib/Whist(216i - 60h - 5o).nnet";
 				break;
 			case 2:
-				NNSettings.nn = "Whist(216i - 80h - 5o).nnet";
+				NNSettings.nn = "lib/Whist(216i - 80h - 5o).nnet";
 				break;
 			case 3:
-				NNSettings.nn = "Whist(216i - 100h - 5o).nnet";
+				NNSettings.nn = "lib/Whist(216i - 100h - 5o).nnet";
 				break;
 //			case 4:
 //				NNSettings.nn = "lib/Self 0.0000001.nnet";
@@ -77,8 +77,7 @@ public class GameDriver {
 				learnGame(gd, 0);
 				gd.clear();
 				if (i % 50 == 0)
-					testGame(NNSettings.nn, 10, "data/Self lambda " + NNSettings.lambda, i);
-//				testGame(NNSettings.nn, 10, "data/Self " + x, i);
+					testGame(NNSettings.nn, 10, "data/Self hidden " + x, i);
 				t2 = System.currentTimeMillis();
 				System.out.println(i + "\t" + (t2 - t1) + "\t" + ((t2 - start) / (i + 1)) + "/" + (t2 - start));
 				td.save();
