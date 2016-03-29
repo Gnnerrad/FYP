@@ -49,25 +49,25 @@ public class GameDriver {
 
 	private void driver() {
 
-		for (int x = 0; x < 4; x++) {
-			switch (x) {
-			case 0:
-				NNSettings.nn = "lib/Whist(216i - 40h - 5o).nnet";
-				break;
-			case 1:
-				NNSettings.nn = "lib/Whist(216i - 60h - 5o).nnet";
-				break;
-			case 2:
-				NNSettings.nn = "lib/Whist(216i - 80h - 5o).nnet";
-				break;
-			case 3:
+//		for (int x = 0; x < 4; x++) {
+//			switch (x) {
+//			case 0:
+//				NNSettings.nn = "lib/Whist(216i - 40h - 5o).nnet";
+//				break;
+//			case 1:
+//				NNSettings.nn = "lib/Whist(216i - 60h - 5o).nnet";
+//				break;
+//			case 2:
+//				NNSettings.nn = "lib/Whist(216i - 80h - 5o).nnet";
+//				break;
+//			case 3:
 				NNSettings.nn = "lib/Whist(216i - 100h - 5o).nnet";
-				break;
+//				break;
 //			case 4:
 //				NNSettings.nn = "lib/Self 0.0000001.nnet";
 //				NNSettings.learningRate = 0.0000001;
 //				break;
-			}
+//			}
 			td = new temporalDifference(NNSettings.nn);
 			double start = System.currentTimeMillis(), t1, t2;
 			GameData gd = new GameData();
@@ -77,13 +77,13 @@ public class GameDriver {
 				learnGame(gd, 0);
 				gd.clear();
 				if (i % 50 == 0)
-					testGame(NNSettings.nn, 10, "data/Self hidden " + x, i);
+					testGame(NNSettings.nn, 10, "data/Self hidden 3", i);
 				t2 = System.currentTimeMillis();
 				System.out.println(i + "\t" + (t2 - t1) + "\t" + ((t2 - start) / (i + 1)) + "/" + (t2 - start));
 				td.save();
 //				NNSettings.learningRate = NNSettings.learningRate * 0.9998;
 			}
-		}
+//		}
 		// learn(9000);
 		// test100();
 		// System.out.println();
