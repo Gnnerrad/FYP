@@ -71,7 +71,7 @@ import dataStructures.IOTuple;
 
 public class temporalDifference {
     private NeuralNetwork<BackPropagation> network;
-    private BackPropagation backprop = new BackPropagation();
+    private Bac	kPropagation backprop = new BackPropagation();
     // private Writer writer = new Writer();
     private DataSet learningData = new DataSet(NNSettings.inputSize, NNSettings.outputSize);
 
@@ -89,6 +89,7 @@ public class temporalDifference {
 	backprop.learn(learningData, 1);
 	// All other Cases
 	for (int count = data.size() - 2; count > 0; count--) {
+	    lambdaPower++;
 	    learningData.clear();
 	    learningData.addRow(data.get(count - 1).getInput(), data.get(count).getOutput());
 	    backprop.setLearningRate(NNSettings.learningRate * Math.pow(NNSettings.lambda, lambdaPower));
