@@ -46,46 +46,48 @@ public class GameDriver {
     }
 
     private void driver() {
-
-	for (int x = 0; x < 4; x++) {
-	    switch (x) {
-	    case 0:
-		NNSettings.lambda = 0.95;
-		NNSettings.nn = "lib/NN 0.95.nnet";
-		break;
-	    case 1:
-		NNSettings.lambda = 0.975;
-		NNSettings.nn = "lib/NN 0.975.nnet";
-		break;
-	    case 2:
-		NNSettings.lambda = 1;
-		NNSettings.nn = "lib/NN 1.nnet";
-		break;
-//	    case 3:
-//		NNSettings.lambda = 1;
-//		NNSettings.nn = "lib/NN 1.nnet";
-//		break;
+	NNSettings.lambda = 0.05;
+	for (int x = 0; x < 20; x++) {
+	    // switch (x) {
+	    // case 0:
+	    // NNSettings.lambda = 0.95;
+	    // NNSettings.nn = "lib/NN 0.95.nnet";
+	    // break;
+	    // case 1:
+	    // NNSettings.lambda = 0.975;
+	    // NNSettings.nn = "lib/NN 0.975.nnet";
+	    // break;
+	    // case 2:
+	    // NNSettings.lambda = 1;
+	    // NNSettings.nn = "lib/NN 1.nnet";
+	    // break;
+	    // case 3:
+	    // NNSettings.lambda = 1;
+	    // NNSettings.nn = "lib/NN 1.nnet";
+	    // break;
 	    // case 4:
 	    // NNSettings.nn = "lib/Self 0.0000001.nnet";
 	    // NNSettings.learningRate = 0.0000001;
 	    // break;
-	    }
-	    td = new temporalDifference(NNSettings.nn);
-	    double start = System.currentTimeMillis(), t1, t2;
-	    GameData gd = new GameData();
-	    for (int i = 0; i <= 1000; i++) {
-		t1 = System.currentTimeMillis();
-		playGame(true, false, NNSettings.nn, NNSettings.nn, null, gd);
-		learnGame(gd, 0);
-		gd.clear();
-		if (i % 50 == 0)
-		    testGame(NNSettings.nn, 10, "data/Self hidden 100 " + NNSettings.lambda , i);
-		t2 = System.currentTimeMillis();
-		System.out.println(i + "\t" + (t2 - t1) + "\t" + ((t2 - start) / (i + 1)) + "/" + (t2 - start));
-		td.save();
-		// NNSettings.learningRate = NNSettings.learningRate * 0.9998;
-	    }
 	}
+	td = new temporalDifference(NNSettings.nn);
+	double start = System.currentTimeMillis(), t1, t2;
+	GameData gd = new GameData();
+	for (int i = 0; i <= 1000; i++) {
+	    t1 = System.currentTimeMillis();
+	    playGame(true, false, NNSettings.nn, NNSettings.nn, null, gd);
+	    learnGame(gd, 0);
+	    gd.clear();
+	    if (i % 50 == 0)
+		testGame(NNSettings.nn, 10, "Data 2.0/Self hidden 100 " + NNSettings.lambda, i);
+	    t2 = System.currentTimeMillis();
+	    System.out.println(i + "\t" + (t2 - t1) + "\t" + ((t2 - start) / (i + 1)) + "/" + (t2 - start));
+	    td.save();
+	    // NNSettings.learningRate = NNSettings.learningRate * 0.9998;
+	}
+	td.randomiseNN();
+	NNSettings.lambda+=0.05;
+	// }
 	// learn(9000);
 	// test100();
 	// System.out.println();

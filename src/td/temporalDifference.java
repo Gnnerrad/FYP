@@ -71,7 +71,7 @@ import dataStructures.IOTuple;
 
 public class temporalDifference {
     private NeuralNetwork<BackPropagation> network;
-    private Bac	kPropagation backprop = new BackPropagation();
+    private BackPropagation backprop = new BackPropagation();
     // private Writer writer = new Writer();
     private DataSet learningData = new DataSet(NNSettings.inputSize, NNSettings.outputSize);
 
@@ -103,5 +103,9 @@ public class temporalDifference {
     
     public void save(String d){
 	network.save(d);
+    }
+    
+    public void randomiseNN(){
+	network.randomizeWeights();
     }
 }
