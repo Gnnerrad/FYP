@@ -51,7 +51,7 @@ public class GameDriver {
 
     private void driver() {
 	// NNSettings.lambda = 0.05;
-	for (int x = 0; x < 2; x++) {
+	for (int x = 0; x < 3; x++) {
 	    switch (x) {
 	    case 0:
 		NNSettings.learningRate = 0.000075;
@@ -61,10 +61,10 @@ public class GameDriver {
 		NNSettings.learningRate = 0.00005;
 		NNSettings.nn = "lib/Self 100 lr 0.00005.nnet";
 		break;
-	    // case 2:
-	    // NNSettings.lambda = 1;
-	    // NNSettings.nn = "lib/NN 1.nnet";
-	    // break;
+	    case 2:
+		NNSettings.learningRate = 0.00005;
+		NNSettings.nn = "lib/Self 100 lr 0.00005.nnet";
+		break;
 	    // case 3:
 	    // NNSettings.lambda = 1;
 	    // NNSettings.nn = "lib/NN 1.nnet";
@@ -77,13 +77,13 @@ public class GameDriver {
 	    td = new temporalDifference(NNSettings.nn);
 	    double start = System.currentTimeMillis(), t1, t2;
 	    GameData gd = new GameData();
-	    for (int i = 0; i <= 1500; i++) {
+	    for (int i = 0; i <= 10000; i++) {
 		t1 = System.currentTimeMillis();
 		playGame(true, true, NNSettings.nn, NNSettings.nn, null, gd);
 		learnGame(gd, 0);
 		gd.clear();
 		if (i % 50 == 0)
-		    testGame(NNSettings.nn, 10, "Data 2.0/Self hidden 100 " + NNSettings.learningRate, i);
+		    testGame(NNSettings.nn, 10, "data/Self lr " + NNSettings.learningRate + " rmse", i);
 		t2 = System.currentTimeMillis();
 		System.out.println(i + "\t" + (t2 - t1) + "\t" + ((t2 - start) / (i + 1)) + "/" + (t2 - start));
 		td.save();

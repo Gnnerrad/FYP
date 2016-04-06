@@ -5,28 +5,28 @@ __author__ = 'darre_000'
 data = []
 labels = []
 #READ CSV
-for index in range(7):
+for index in range(2):
     if(index == 0):
-        file = 'Self hidden 100 0.4'
+        file = 'Self hidden 100 5.0E-5'
         labels.append(file)
     elif(index == 1):
-        file = 'Self hidden 100 0.5'
+        file = 'Self hidden 100 7.5E-5'
         labels.append(file)
-    elif(index == 2):
-        file = 'Self hidden 100 0.6'
-        labels.append(file)
-    elif(index == 3):
-        file = 'Self hidden 100 0.7'
-        labels.append(file)
-    elif(index == 4):
-        file = 'Self hidden 100 0.8'
-        labels.append(file)
-    elif(index == 5):
-        file = 'Self hidden 100 0.9'
-        labels.append(file)
-    elif(index == 6):
-        file = 'Self hidden 100 1.0'
-        labels.append(file)
+    # elif(index == 2):
+    #     file = 'Self hidden 100 0.6'
+    #     labels.append(file)
+    # elif(index == 3):
+    #     file = 'Self hidden 100 0.7'
+    #     labels.append(file)
+    # elif(index == 4):
+    #     file = 'Self hidden 100 0.8'
+    #     labels.append(file)
+    # elif(index == 5):
+    #     file = 'Self hidden 100 0.9'
+    #     labels.append(file)
+    # elif(index == 6):
+    #     file = 'Self hidden 100 1.0'
+    #     labels.append(file)
     lines = [line.rstrip('\n') for line in open("..\Data 2.0\\" + file)]
     sub = []
     avg = []
