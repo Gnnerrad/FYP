@@ -1,4 +1,4 @@
-package objects;
+package Whist;
 
 public class Card {
 

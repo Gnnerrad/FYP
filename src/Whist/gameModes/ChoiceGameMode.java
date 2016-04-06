@@ -1,10 +1,8 @@
-package gameModes;
+package Whist.gameModes;
 
-import java.util.Scanner;
-
-import objects.Card;
-import objects.Deck;
-import objects.Player;
+import Whist.Card;
+import Whist.Deck;
+import Whist.Player;
 
 public class ChoiceGameMode extends BasicModeLayout {
     public int trumpSuit; // CLUBS(0), SPADES(1), HEARTS(2), DIAMONDS(3)

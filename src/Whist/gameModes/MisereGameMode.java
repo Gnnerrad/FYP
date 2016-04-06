@@ -1,9 +1,8 @@
-package gameModes;
+package Whist.gameModes;
 
-import NN.NNSettings;
-import objects.Card;
-import objects.Deck;
-import objects.Player;
+import Whist.Card;
+import Whist.Deck;
+import Whist.Player;
 
 public class MisereGameMode extends BasicModeLayout {
 

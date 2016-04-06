@@ -1,7 +1,8 @@
-package gameModes;
+package Whist.gameModes;
 
 import java.util.ArrayList;
-import objects.Card;
+
+import Whist.Card;
 
 public class legalMoveGenerator {
     public ArrayList<Card> legalMoves(ArrayList<Card> hand,

@@ -1,8 +1,8 @@
-package gameModes;
+package Whist.gameModes;
 
-import objects.Card;
-import objects.Deck;
-import objects.Player;
+import Whist.Card;
+import Whist.Deck;
+import Whist.Player;
 
 public class BasicModeLayout {
     protected int player1Tricks, player2Tricks;

@@ -1,17 +1,14 @@
-package objects;
+package Whist;
 
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 
-import NN.NNSettings;
-import dataStructures.IOTuple;
-import objects.Card.CardValue;
-import objects.Card.Suit;
+import Whist.Card.CardValue;
+import Whist.Card.Suit;
 
 public class Deck {
 

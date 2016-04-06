@@ -1,4 +1,4 @@
-package objects;
+package Whist;
 
 import java.util.ArrayList;
 import java.util.HashSet;
