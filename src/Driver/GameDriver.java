@@ -55,15 +55,15 @@ public class GameDriver {
 	    switch (x) {
 	    case 0:
 		NNSettings.learningRate = 0.000075;
-		NNSettings.nn = "lib/Self 100 lr 0.000075.nnet";
+		NNSettings.nn = "lib/Self lr 0.000075.nnet";
 		break;
 	    case 1:
 		NNSettings.learningRate = 0.00005;
-		NNSettings.nn = "lib/Self 100 lr 0.00005.nnet";
+		NNSettings.nn = "lib/Self lr 0.00005.nnet";
 		break;
 	    case 2:
 		NNSettings.learningRate = 0.00005;
-		NNSettings.nn = "lib/Self 100 lr 0.000025.nnet";
+		NNSettings.nn = "lib/Self lr 0.000025.nnet";
 		break;
 	    // case 3:
 	    // NNSettings.lambda = 1;
