@@ -61,18 +61,18 @@ public class GameDriver {
 		NNSettings.learningRate = 0.000075;
 		NNSettings.nn = "lib/Self 100 lr 0.000075.nnet";
 		break;
-//	    case 2:
-//		NNSettings.lambda = 1;
-//		NNSettings.nn = "lib/NN 1.nnet";
-//		break;
-//	    case 3:
-//		NNSettings.lambda = 1;
-//		NNSettings.nn = "lib/NN 1.nnet";
-//		break;
-//	    case 4:
-//		NNSettings.nn = "lib/Self 0.0000001.nnet";
-//		NNSettings.learningRate = 0.0000001;
-//		break;
+	    // case 2:
+	    // NNSettings.lambda = 1;
+	    // NNSettings.nn = "lib/NN 1.nnet";
+	    // break;
+	    // case 3:
+	    // NNSettings.lambda = 1;
+	    // NNSettings.nn = "lib/NN 1.nnet";
+	    // break;
+	    // case 4:
+	    // NNSettings.nn = "lib/Self 0.0000001.nnet";
+	    // NNSettings.learningRate = 0.0000001;
+	    // break;
 	    }
 	    td = new temporalDifference(NNSettings.nn);
 	    double start = System.currentTimeMillis(), t1, t2;
@@ -87,10 +87,7 @@ public class GameDriver {
 		t2 = System.currentTimeMillis();
 		System.out.println(i + "\t" + (t2 - t1) + "\t" + ((t2 - start) / (i + 1)) + "/" + (t2 - start));
 		td.save();
-		// NNSettings.learningRate = NNSettings.learningRate * 0.9998;
 	    }
-	    // td.randomiseNN();
-	    // NNSettings.lambda+=0.05;
 	}
 	// learn(9000);
 	// test100();
