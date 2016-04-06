@@ -55,11 +55,11 @@ public class GameDriver {
 	    switch (x) {
 	    case 0:
 		NNSettings.learningRate = 0.000075;
-		NNSettings.nn = "lib/Self 100 lr 0.00005.nnet";
+		NNSettings.nn = "lib/Self 100 lr 0.000075.nnet";
 		break;
 	    case 1:
-		NNSettings.learningRate = 0.000075;
-		NNSettings.nn = "lib/Self 100 lr 0.000075.nnet";
+		NNSettings.learningRate = 0.00005;
+		NNSettings.nn = "lib/Self 100 lr 0.00005.nnet";
 		break;
 	    // case 2:
 	    // NNSettings.lambda = 1;
@@ -79,7 +79,7 @@ public class GameDriver {
 	    GameData gd = new GameData();
 	    for (int i = 0; i <= 1500; i++) {
 		t1 = System.currentTimeMillis();
-		playGame(false, true, NNSettings.nn, NNSettings.nn, null, gd);
+		playGame(true, true, NNSettings.nn, NNSettings.nn, null, gd);
 		learnGame(gd, 0);
 		gd.clear();
 		if (i % 50 == 0)
