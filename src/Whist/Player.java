@@ -95,6 +95,7 @@ public class Player {
 	    }
 	    neuralNetwork.addCardIHave(handCard);
 	    neuralNetwork.clearCardToPlay();
+	    neuralNetwork.clearCardInPlay();
 	}
 	hand.remove(bestCard);
 	neuralNetworkData.add(new IOTuple(4, neuralNetworkData.size(), bestInput, bestOutput));

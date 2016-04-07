@@ -70,42 +70,47 @@ import NN.NNSettings;
 import dataStructures.IOTuple;
 
 public class temporalDifference {
-    private NeuralNetwork<BackPropagation> network;
-    private BackPropagation backprop = new BackPropagation();
-    // private Writer writer = new Writer();
-    private DataSet learningData = new DataSet(NNSettings.inputSize, NNSettings.outputSize);
+	private NeuralNetwork<BackPropagation> network;
+	private BackPropagation backprop = new BackPropagation();
+	// private Writer writer = new Writer();
+	private DataSet learningData = new DataSet(NNSettings.inputSize, NNSettings.outputSize);
 
-    public temporalDifference(String nn) {
-	network = NeuralNetwork.load(nn);
-	backprop.setNeuralNetwork(network);
-    }
-
-    public void learn(ArrayList<IOTuple> data) {
-	learningData.clear();
-	int lambdaPower = 0;
-	// Last move Case
-	learningData.addRow(data.get(data.size() - 2).getInput(), data.get(data.size() - 1).getOutput());
-	backprop.setLearningRate(NNSettings.learningRate * Math.pow(NNSettings.lambda, lambdaPower));
-	backprop.learn(learningData, 1);
-	// All other Cases
-	for (int count = data.size() - 2; count > 0; count--) {
-	    lambdaPower++;
-	    learningData.clear();
-	    learningData.addRow(data.get(count - 1).getInput(), data.get(count).getOutput());
-	    backprop.setLearningRate(NNSettings.learningRate * Math.pow(NNSettings.lambda, lambdaPower));
-	    backprop.learn(learningData, 1);
+	public temporalDifference(String nn) {
+		network = NeuralNetwork.load(nn);
+		backprop.setNeuralNetwork(network);
 	}
-    }
 
-    public void save() {
-	network.save(NNSettings.nn);
-    }
-    
-    public void save(String d){
-	network.save(d);
-    }
-    
-    public void randomiseNN(){
-	network.randomizeWeights();
-    }
+	public void learn(ArrayList<IOTuple> data) {
+		learningData.clear();
+		int lambdaPower = 0;
+		// Last move Case
+		learningData.addRow(data.get(data.size() - 2).getInput(), data.get(data.size() - 1).getOutput());
+		backprop.setLearningRate(NNSettings.learningRate * Math.pow(NNSettings.lambda, lambdaPower));
+		backprop.learn(learningData, 1);
+		double[] out = new double[5];
+		// All other Cases
+		for (int count = data.size() - 2; count > 0; count--) {
+			lambdaPower++;
+			learningData.clear();
+			network.setInput(data.get(count - 1).getInput());
+			network.calculate();
+			out = network.getOutput();
+			learningData.addRow(data.get(count - 1).getInput(), data.get(count).getOutput());
+			backprop.setLearningRate(NNSettings.learningRate * Math.pow(NNSettings.lambda, lambdaPower));
+			backprop.learn(learningData, 1); // The second argument is the
+												// propagation iteration count
+		}
+	}
+
+	public void save() {
+		network.save(NNSettings.nn);
+	}
+
+	public void save(String d) {
+		network.save(d);
+	}
+
+	public void randomiseNN() {
+		network.randomizeWeights();
+	}
 }
