@@ -5,29 +5,40 @@ __author__ = 'darre_000'
 data = []
 labels = []
 #READ CSV
-for index in range(2):
+for index in range(8):
     if(index == 0):
-        file = 'Self hidden 100 5.0E-5'
+        dir = ''
+        file = 'Self lr 0.00001 rmse'
         labels.append(file)
     elif(index == 1):
-        file = 'Self hidden 100 7.5E-5'
+        dir = ''
+        file = 'Self lr 0.0001 rmse'
         labels.append(file)
-    # elif(index == 2):
-    #     file = 'Self hidden 100 0.6'
-    #     labels.append(file)
-    # elif(index == 3):
-    #     file = 'Self hidden 100 0.7'
-    #     labels.append(file)
-    # elif(index == 4):
-    #     file = 'Self hidden 100 0.8'
-    #     labels.append(file)
-    # elif(index == 5):
-    #     file = 'Self hidden 100 0.9'
-    #     labels.append(file)
-    # elif(index == 6):
-    #     file = 'Self hidden 100 1.0'
-    #     labels.append(file)
-    lines = [line.rstrip('\n') for line in open("..\Data 2.0\\" + file)]
+    elif(index == 2):
+        dir = ''
+        file = 'Self lr 0.001 rmse'
+        labels.append(file)
+    if(index == 3):
+        dir = '..\Data 2.0\\'
+        file = 'Self 100 lr 7.5E-5 rmse'
+        labels.append(file)
+    elif(index == 4):
+        dir = '..\Data 2.0\\'
+        file = 'Self 100 lr 5.0E-5 rmse'
+        labels.append(file)
+    elif(index == 5):
+        dir = '..\Data 2.0\\'
+        file = 'Self 100 lr 1.0E-4 rmse'
+        labels.append(file)
+    elif(index == 6):
+        dir = '..\Data 2.0\\'
+        file = 'Self 100 lr 5.0E-4 rmse'
+        labels.append(file)
+    elif(index == 7):
+        dir = '..\Data 2.0\\'
+        file = 'Self 100 lr 2.5E-4 rmse'
+        labels.append(file)
+    lines = [line.rstrip('\n') for line in open(dir + file)]#("..\Data 2.0\\" + file)]
     sub = []
     avg = []
     av = 0
@@ -47,7 +58,6 @@ for index in range(2):
 import matplotlib.pyplot as plt
 import numpy as n
 
-plt.title("Lambda vs RMSE")
 for d in data:
     plt.plot(d, label=str(labels[data.index(d)]))
 # plt.legend(bbox_to_anchor=(0., 1.02, 1., .102), loc=1, ncol=2, mode="expand", borderaxespad=0.)

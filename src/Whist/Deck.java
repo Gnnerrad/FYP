@@ -23,6 +23,7 @@ public class Deck {
 		this.deck.add(card);
 	    }
 	}
+	shuffle();
     }
 
     public ArrayList<Card> getDeck() {
